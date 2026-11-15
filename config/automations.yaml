@@ -1,0 +1,1570 @@
+- id: '1728828226096'
+  alias: Sternenhimmel Auto Off 30min
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - switch.schalter_sternenhimmel
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 30
+      seconds: 0
+  condition: []
+  action:
+  - action: switch.turn_off
+    target:
+      entity_id: switch.schalter_sternenhimmel
+    data: {}
+  mode: single
+- id: '1729058444825'
+  alias: Sonos Beam Auto On
+  description: ''
+  trigger:
+  - platform: time
+    at: 08:00:00
+  condition:
+  - condition: state
+    entity_id: switch.schalter_babyphone_schlafzimmer
+    state: 'off'
+    for:
+      hours: 3
+      minutes: 0
+      seconds: 0
+  action:
+  - type: turn_on
+    device_id: 8358208062313dd5a71330fc32f9c724
+    entity_id: 295a5bc88bae002f390cb0b28108de29
+    domain: switch
+  mode: single
+- id: '1729162630408'
+  alias: Schalter Heizstrahler Auto OFF 15 min
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - switch.schalter_heizstrahler
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 15
+      seconds: 0
+  condition: []
+  action:
+  - action: switch.turn_off
+    data: {}
+    target:
+      entity_id: switch.schalter_heizstrahler
+  mode: single
+- id: '1731270694881'
+  alias: Lüften Winter
+  description: ''
+  triggers:
+  - at: 08:30:00
+    trigger: time
+  - at: '13:00:00'
+    trigger: time
+  - at: '19:00:00'
+    trigger: time
+  conditions:
+  - condition: numeric_state
+    entity_id: sensor.wettersensor_temperature
+    below: 24
+  actions:
+  - action: scene.turn_on
+    metadata: {}
+    target:
+      entity_id: scene.klf_200_gateway_alle_auf
+    data: {}
+  - delay:
+      hours: 0
+      minutes: 10
+      seconds: 0
+      milliseconds: 0
+  - action: scene.turn_on
+    metadata: {}
+    target:
+      entity_id: scene.klf_200_gateway_alle_zu
+    data: {}
+  - delay:
+      hours: 0
+      minutes: 10
+      seconds: 0
+      milliseconds: 0
+  - action: scene.turn_on
+    metadata: {}
+    target:
+      entity_id: scene.klf_200_gateway_alle_zu
+    data: {}
+  mode: single
+- id: '1731309781682'
+  alias: Kleiderschrank An
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - light.tasmota
+    to: 'on'
+  condition: []
+  action:
+  - type: turn_on
+    device_id: 27ed959ce0ccab4203f5084c359b3e10
+    entity_id: 152fdaab98a08307f4ca5c1a75797281
+    domain: light
+  mode: single
+- id: '1731309808837'
+  alias: Kleiderschrank Aus
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - light.tasmota
+    to: 'off'
+  condition: []
+  action:
+  - type: turn_off
+    device_id: 27ed959ce0ccab4203f5084c359b3e10
+    entity_id: 152fdaab98a08307f4ca5c1a75797281
+    domain: light
+  mode: single
+- id: '1733305083725'
+  alias: Velux Reboot
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - cover.windfang
+    to:
+    - unavailable
+  - trigger: state
+    entity_id:
+    - cover.links
+    to:
+    - unavailable
+  - trigger: state
+    entity_id:
+    - cover.rechts
+    to:
+    - unavailable
+  conditions: []
+  actions:
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.licht_tischlampe_fernseher
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 10
+      milliseconds: 0
+  - action: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.licht_tischlampe_fernseher
+  - delay:
+      hours: 0
+      minutes: 1
+      seconds: 0
+      milliseconds: 0
+  - action: homeassistant.reload_config_entry
+    metadata: {}
+    target:
+      device_id:
+      - afa30597076dbc72775be89c4097d1b2
+      - 20ea058c234b60545e8b811308ba3e95
+      - 3a5397fd3f02f3c4c48d4c702d5bbe5c
+      - 6bdd29cc3a6eb24d8a870d55b222dfae
+    data: {}
+  mode: single
+- id: '1733581685774'
+  alias: 'Abend Parkplatz Licht Karl '
+  description: ''
+  trigger:
+  - platform: zone
+    entity_id: person.karl
+    zone: zone.schoderleh
+    event: enter
+  condition:
+  - condition: sun
+    before: sunrise
+    after: sunset
+  action:
+  - action: light.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.licht_parkplatz
+  - delay:
+      hours: 0
+      minutes: 15
+      seconds: 0
+      milliseconds: 0
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.licht_parkplatz
+  mode: single
+- id: '1733581752887'
+  alias: 'Abend Parkplatz Licht Lisa '
+  description: ''
+  trigger:
+  - platform: zone
+    entity_id: person.lisa
+    zone: zone.schoderleh
+    event: enter
+  condition:
+  - condition: sun
+    before: sunrise
+    after: sunset
+  action:
+  - action: light.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.licht_parkplatz
+  - delay:
+      hours: 0
+      minutes: 15
+      seconds: 0
+      milliseconds: 0
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.licht_parkplatz
+  mode: single
+- id: '1734443753327'
+  alias: Octopi Fertig
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.octoprint_current_state
+    from: Printing
+    to: Operational
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+  condition: []
+  action:
+  - action: notify.mobile_app_karl_s_s22
+    data:
+      message: 3D Druck fertig, wird in 10 min abgeschaltet
+  mode: single
+- id: '1734443818112'
+  alias: Octoprint Turn OFF
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.octoprint_current_state
+    from: Printing
+    to: Operational
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+  condition: []
+  action:
+  - action: notify.mobile_app_karl_s_s22
+    data:
+      message: 3D Drucker abgeschaltet
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.schalter_3d_drucker
+  mode: single
+- id: '1735829417151'
+  alias: Technikraum 30min Auto off
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - light.licht_technikraum
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 30
+      seconds: 0
+  condition: []
+  action:
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.licht_technikraum
+  mode: single
+- id: '1735829500523'
+  alias: Parkplatz 20min Auto Off
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - light.licht_parkplatz
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 20
+      seconds: 0
+  condition: []
+  action:
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.licht_parkplatz
+  mode: single
+- id: '1744649344598'
+  alias: Waschmaschine Monitor
+  description: ''
+  use_blueprint:
+    path: sbyx/notify-or-do-something-when-an-appliance-like-a-dishwasher-or-washing-machine-finishes.yaml
+    input:
+      power_sensor: sensor.schalter_waschmaschine_energy_apparentpower
+      starting_threshold: 100
+      finishing_threshold: 20
+      actions:
+      - action: notify.mobile_app_karl_s_s22
+        metadata: {}
+        data:
+          message: Waschmaschine Fertig
+      - action: notify.mobile_app_s25
+        metadata: {}
+        data:
+          message: Waschmaschine Fertig
+      pre_actions:
+      - action: notify.mobile_app_karl_s_s22
+        metadata: {}
+        data:
+          message: Waschmaschine An
+      - action: notify.mobile_app_s25
+        data:
+          message: Waschmaschine An
+- id: '1744649505138'
+  alias: Trockner Monitor
+  description: ''
+  use_blueprint:
+    path: sbyx/notify-or-do-something-when-an-appliance-like-a-dishwasher-or-washing-machine-finishes.yaml
+    input:
+      power_sensor: sensor.schalter_trockner_energy_apparentpower
+      starting_threshold: 100
+      finishing_threshold: 20
+      actions:
+      - action: notify.mobile_app_karl_s_s22
+        metadata: {}
+        data:
+          message: Trockner Fertig
+      - action: notify.mobile_app_s25
+        metadata: {}
+        data:
+          message: Trockner Fertig
+      pre_actions:
+      - action: notify.mobile_app_karl_s_s22
+        metadata: {}
+        data:
+          message: Trockner An
+      - action: notify.mobile_app_s25
+        metadata: {}
+        data:
+          message: Trockner An
+- id: '1745820317160'
+  alias: 'Auto Licht Aus Helligkeit '
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id:
+    - sensor.wettersensor_illuminance
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+    above: 4000
+  condition: []
+  action:
+  - action: script.alle_aus
+    metadata: {}
+    data: {}
+  mode: single
+- id: '1749033246202'
+  alias: Klima AN
+  description: ''
+  triggers:
+  - entity_id:
+    - sensor.wettersensor_temperature
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+    above: 24
+    trigger: numeric_state
+  conditions: []
+  actions:
+  - action: climate.set_temperature
+    target:
+      entity_id:
+      - climate.kinderzimmer_2
+      - climate.schlafzimmer_2
+    data:
+      hvac_mode: cool
+  mode: single
+- id: '1750610595132'
+  alias: Klima Aus Sunset
+  description: ''
+  trigger:
+  - platform: sun
+    event: sunset
+    offset: 0
+  condition: []
+  action:
+  - action: climate.turn_off
+    target:
+      entity_id:
+      - climate.kinderzimmer_2
+      - climate.schlafzimmer_2
+    data: {}
+  mode: single
+- id: '1759220569774'
+  alias: Klima Schlafzimmer An
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.schlafzimmer_klima_an
+    to: 'on'
+  conditions: []
+  actions:
+  - action: climate.set_temperature
+    metadata: {}
+    data:
+      temperature: 20
+      hvac_mode: cool
+    target:
+      entity_id: climate.schlafzimmer_2
+  mode: single
+- id: '1759220613828'
+  alias: Klima Schlafzimmer Aus
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.schlafzimmer_klima_an
+    to: 'off'
+  conditions: []
+  actions:
+  - action: climate.set_temperature
+    metadata: {}
+    data:
+      temperature: 20
+      hvac_mode: 'off'
+    target:
+      entity_id: climate.schlafzimmer_2
+  mode: single
+- id: '1759220637309'
+  alias: Klima Kinderzimmer Aus
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.schlafzimmer_klima_an
+    to: 'off'
+  conditions: []
+  actions:
+  - action: climate.set_temperature
+    metadata: {}
+    data:
+      temperature: 20
+      hvac_mode: 'off'
+    target:
+      entity_id: climate.kinderzimmer_2
+  mode: single
+- id: '1760784462331'
+  alias: Aroma An 7 Uhr
+  description: ''
+  triggers:
+  - trigger: time
+    at: 07:00:00
+  - trigger: time
+    at: '17:00:00'
+  conditions: []
+  actions:
+  - action: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.smart_aroma_diffuser_1
+  mode: single
+- id: '1762461716560'
+  alias: Homematic aktualisieren
+  description: ''
+  triggers:
+  - trigger: time_pattern
+    minutes: /5
+  conditions: []
+  actions:
+  - action: homeassistant.reload_config_entry
+    metadata: {}
+    data:
+      entry_id: 01JSKTAEH3QS0V0HRFQ2SNBTSX
+  mode: single
+- id: '1762854993378'
+  alias: Aroma Aus 30min
+  description: ''
+  triggers:
+  - type: turned_on
+    device_id: 1a5620d04d4318fd2789f2be046dc901
+    entity_id: 61bda4053d5975de9d3727bdfc2f5a67
+    domain: switch
+    trigger: device
+    for:
+      hours: 0
+      minutes: 30
+      seconds: 0
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: 1a5620d04d4318fd2789f2be046dc901
+    entity_id: 61bda4053d5975de9d3727bdfc2f5a67
+    domain: switch
+  mode: single
+- id: '1763923596041'
+  alias: Pumpe 1 BOOLEAN AN
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.pumpe_1_max
+    to:
+    - 'on'
+  - trigger: state
+    entity_id:
+    - switch.pumpe_1
+    to:
+    - 'on'
+  - trigger: state
+    entity_id:
+    - binary_sensor.durchfluss_1_switch1
+    to:
+    - 'on'
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.durchfluss_1_switch2
+    state:
+    - 'on'
+  - condition: state
+    state:
+    - 'on'
+    entity_id: switch.pumpe_1
+  actions:
+  - action: input_boolean.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.pumpe_1_pumpt
+  - action: input_boolean.toggle
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.pumpe_1_an_helfer
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.pumpe_1_an_stand
+    data_template:
+      value: '{{ states(''sensor.durchfluss_brunnen_1_2_counter_c1'') }}'
+  mode: single
+- id: '1763923644567'
+  alias: Pumpe 2 BOOLEAN AN
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.pumpe_2_max
+    to:
+    - 'on'
+  - trigger: state
+    entity_id:
+    - switch.pumpe_2
+    to:
+    - 'on'
+  - trigger: state
+    entity_id:
+    - binary_sensor.durchfluss_1_switch3
+    to:
+    - 'on'
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.durchfluss_1_switch4
+    state:
+    - 'on'
+  - condition: state
+    entity_id: switch.pumpe_2
+    state:
+    - 'on'
+  actions:
+  - action: input_boolean.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - input_boolean.pumpe_2_pumpt
+  - action: input_boolean.toggle
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.pumpe_2_an_helfer
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.pumpe_2_an_stand
+    data_template:
+      value: '{{ states(''sensor.durchfluss_brunnen_1_2_counter_c2'') }}'
+  mode: single
+- id: '1763923727317'
+  alias: Pumpe 2 BOOLEAN AUS
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.durchfluss_1_switch4
+    from:
+    - 'on'
+    to:
+    - 'off'
+  - trigger: state
+    entity_id:
+    - switch.pumpe_2
+    from:
+    - 'on'
+    to:
+    - 'off'
+  conditions: []
+  actions:
+  - action: input_boolean.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.pumpe_2_pumpt
+  - action: input_boolean.toggle
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.pumpe_2_aus_helfer
+  - delay:
+      hours: 0
+      minutes: 2
+      seconds: 0
+      milliseconds: 0
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.pumpe_2_aus_stand
+    data_template:
+      value: '{{ states(''sensor.durchfluss_brunnen_1_2_counter_c2'') }}'
+  mode: single
+- id: '1763923754062'
+  alias: Pumpe 1 BOOLEAN AUS
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.durchfluss_1_switch2
+    from:
+    - 'on'
+    to:
+    - 'off'
+  - trigger: state
+    entity_id:
+    - switch.pumpe_1
+    to:
+    - 'off'
+    from:
+    - 'on'
+  conditions: []
+  actions:
+  - action: input_boolean.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.pumpe_1_pumpt
+  - action: input_boolean.toggle
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.pumpe_1_aus_helfer
+  - delay:
+      hours: 0
+      minutes: 2
+      seconds: 0
+      milliseconds: 0
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.pumpe_1_aus_stand
+    data_template:
+      value: '{{ states(''sensor.durchfluss_brunnen_1_2_counter_c1'') }}'
+  mode: single
+- id: '1763981630185'
+  alias: Pumpe Leerlauf Aus
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.ffmpeg_noise
+    to:
+    - 'off'
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.durchfluss_1_switch2
+    state:
+    - 'off'
+  - condition: state
+    entity_id: binary_sensor.durchfluss_1_switch4
+    state:
+    - 'off'
+  actions:
+  - action: input_boolean.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.pumpe_leerlauf
+  mode: single
+- id: '1763999054288'
+  alias: Pumpe 1 Max Notification
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.durchfluss_1_switch1
+    to:
+    - 'on'
+  conditions: []
+  actions:
+  - action: notify.mobile_app_karl_s_s22
+    metadata: {}
+    data:
+      message: MAX Pumpe 1
+  - action: ffmpeg.restart
+    metadata: {}
+    data: {}
+  mode: single
+- id: '1763999114046'
+  alias: Pumpe 2 MAX Benachrichtigung
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.durchfluss_1_switch3
+    to:
+    - 'on'
+  conditions: []
+  actions:
+  - action: notify.mobile_app_karl_s_s22
+    metadata: {}
+    data:
+      message: MAX Pumpe 2
+  - action: ffmpeg.restart
+    metadata: {}
+    data: {}
+  mode: single
+- id: '1764143301720'
+  alias: Pumpe 1 Max HOM AUS 1 SEK
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.pumpe_1_max
+    to:
+    - 'on'
+  conditions: []
+  actions:
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.pumpe_1_max
+  mode: single
+- id: '1764143346989'
+  alias: Pumpe 2 Max HOM AUS 1 SEK
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.pumpe_2_max
+    to:
+    - 'on'
+  conditions: []
+  actions:
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.pumpe_2_max
+  mode: single
+- id: '1764144093515'
+  alias: 'Pumpe Intervall '
+  description: ''
+  triggers:
+  - trigger: time_pattern
+    minutes: /30
+  conditions:
+  - condition: or
+    conditions:
+    - condition: state
+      state:
+      - 'on'
+      entity_id: input_boolean.schwimmer
+    - condition: state
+      entity_id: binary_sensor.schalter_schwimmer_24v_input_0
+      state:
+      - 'on'
+  actions:
+  - action: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.pumpe_1_max
+      - switch.pumpe_2_max
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 3
+      milliseconds: 0
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.pumpe_1_max
+      - switch.pumpe_2_max
+  mode: single
+- id: '1765559332042'
+  alias: Standheizung Automatik
+  description: ''
+  triggers:
+  - trigger: time
+    at: 07:00:00
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+  - trigger: time
+    at: 07:30:00
+    weekday:
+    - sat
+    - sun
+  conditions:
+  - condition: state
+    entity_id: input_boolean.standheizung_aussetzen
+    state:
+    - 'off'
+  actions:
+  - action: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.schalter_standheizung
+  - delay:
+      hours: 0
+      minutes: 30
+      seconds: 30
+      milliseconds: 0
+    enabled: false
+  - action: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.schalter_standheizung
+    enabled: false
+  mode: single
+- id: '1765560636710'
+  alias: Standheizung Boolean Aus
+  description: ''
+  triggers:
+  - trigger: time
+    at: 09:00:00
+  conditions: []
+  actions:
+  - action: input_boolean.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.standheizung_aussetzen
+  mode: single
+- id: '1765563492035'
+  alias: Pumpe Schwimmer AN
+  description: ''
+  triggers:
+  - trigger: numeric_state
+    entity_id:
+    - sensor.positiver_fullstand_bereinigt
+    below: input_number.pumpen_automatik_min
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+  conditions:
+  - condition: state
+    entity_id: input_boolean.pumpen_automatik
+    state:
+    - 'on'
+  actions:
+  - action: input_boolean.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.schwimmer
+  - action: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.pumpe_2
+      - switch.pumpe_1
+  - action: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.schaltaktor_brunnen_channel3
+      - switch.schaltaktor_brunnen_channel4
+  mode: single
+- id: '1765563532511'
+  alias: Pumpe Schwimmer AUS
+  description: ''
+  triggers:
+  - trigger: template
+    value_template: '{{(states.sensor.pegelstand_zisterne_api.state) >= (states.input_number.pumpen_automatik_max.state)}}'
+  conditions:
+  - condition: state
+    entity_id: input_boolean.pumpen_automatik
+    state:
+    - 'on'
+  actions:
+  - action: input_boolean.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.schwimmer
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.pumpe_2
+      - switch.pumpe_1
+  mode: single
+- id: '1765795200596'
+  alias: Pumpe 100% Benachrichtigung
+  description: ''
+  triggers:
+  - trigger: template
+    value_template: '{{(states.sensor.positiver_fullstand_bereinigt.state) == (states.input_number.pumpen_automatik_max.state)}}'
+  conditions: []
+  actions:
+  - action: notify.mobile_app_karl_s_s22
+    metadata: {}
+    data:
+      message: Füllstand 100%
+  mode: single
+- id: '1767267103241'
+  alias: Phoniebox-Radio-Pause-Stop
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - sensor.phoniebox_phoniebox_radio_player_state
+    to:
+    - pause
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+  conditions: []
+  actions:
+  - action: media_player.media_stop
+    metadata: {}
+    data: {}
+    target:
+      entity_id: media_player.phoniebox_phoniebox_radio
+  mode: single
+- id: '1771573781036'
+  alias: Auto close
+  description: ''
+  triggers:
+  - trigger: time_pattern
+    minutes: /3
+  conditions: []
+  actions:
+  - action: cover.close_cover
+    metadata: {}
+    data: {}
+    target:
+      entity_id: cover.windfang
+  mode: single
+- id: '1774028816795'
+  alias: Elektrozaun AN
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.schalter_elektrozaun
+    to:
+    - 'on'
+  conditions: []
+  actions:
+  - action: input_boolean.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.schalter_elektrozaun_obere_koppel
+  mode: single
+- id: '1774028847189'
+  alias: Elektrozaun AUS
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.schalter_elektrozaun
+    to:
+    - 'off'
+  conditions: []
+  actions:
+  - action: input_boolean.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.schalter_elektrozaun_obere_koppel
+  mode: single
+- id: '1774028895277'
+  alias: Elektrozaun AN REST
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.schalter_elektrozaun_obere_koppel
+    to:
+    - 'on'
+  conditions: []
+  actions:
+  - action: rest_command.schalterelektrozaunan
+    metadata: {}
+    data: {}
+  mode: single
+- id: '1774028924339'
+  alias: Elektrozaun AUS REST
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.schalter_elektrozaun_obere_koppel
+    to:
+    - 'off'
+  conditions: []
+  actions:
+  - action: rest_command.schalterelektrozaunaus
+    metadata: {}
+    data: {}
+  mode: single
+- id: '1774029741282'
+  alias: Elektrozaun MK AN SYNC
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.elektrozaun_mittlere_koppel
+    to:
+    - 'on'
+  conditions:
+  - condition: state
+    entity_id: input_boolean.elektrozaun_automatik
+    state:
+    - 'on'
+  actions:
+  - action: input_boolean.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.schalter_elektrozaun_obere_koppel
+  mode: single
+- id: '1774029767997'
+  alias: Elektrozaun MK SYNC OFF
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.elektrozaun_mittlere_koppel
+    to:
+    - 'off'
+  conditions:
+  - condition: state
+    entity_id: input_boolean.elektrozaun_automatik
+    state:
+    - 'on'
+  actions:
+  - action: input_boolean.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.schalter_elektrozaun_obere_koppel
+  mode: single
+- id: '1774423804496'
+  alias: Elektrozaun Automatik Abend
+  description: ''
+  triggers:
+  - trigger: time
+    at: '20:00:00'
+  conditions:
+  - condition: state
+    entity_id: input_boolean.elektrozaun_automatik
+    state:
+    - 'on'
+  actions:
+  - action: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.elektrozaun_mittlere_koppel
+  mode: single
+- id: '1774424183562'
+  alias: Elektrozaun OK SYNC AN
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.schalter_elektrozaun_obere_koppel
+    to:
+    - 'on'
+  conditions:
+  - condition: state
+    entity_id: input_boolean.elektrozaun_automatik
+    state:
+    - 'on'
+  actions:
+  - action: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.elektrozaun_mittlere_koppel
+  mode: single
+- id: '1774424231413'
+  alias: Elektrozaun OK SYNC AUS
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.schalter_elektrozaun_obere_koppel
+    to:
+    - 'off'
+  conditions:
+  - condition: state
+    entity_id: input_boolean.elektrozaun_automatik
+    state:
+    - 'on'
+  actions:
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.elektrozaun_mittlere_koppel
+  mode: single
+- id: '1774693193049'
+  alias: Willhaben Web Scraper Notification
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - sensor.web_scrape
+    from:
+  conditions: []
+  actions:
+  - action: notify.mobile_app_karl_s_s26
+    metadata: {}
+    data:
+      message: WILLHABEN HOM
+  mode: single
+- id: '1774693659536'
+  alias: willhaben web scraper 5min intervall
+  description: ''
+  triggers:
+  - trigger: time_pattern
+    minutes: /5
+  conditions: []
+  actions:
+  - action: homeassistant.update_entity
+    metadata: {}
+    data:
+      entity_id:
+      - sensor.web_scrape
+  mode: single
+- id: '1780849447234'
+  alias: Schwimmer 24h Warnung
+  description: Alarm bei Schwimmer >60s aktiv und beide Pumpen aus (Wiederholung nach 24h)
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.schalter_schwimmer_24v_input_0
+    to:
+    - 'on'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 60
+  conditions:
+  - condition: state
+    entity_id: switch.pumpe_1
+    state: 'off'
+  - condition: state
+    entity_id: switch.pumpe_2
+    state: 'off'
+  actions:
+  - repeat:
+      while:
+      - condition: state
+        entity_id: binary_sensor.schalter_schwimmer_24v_input_0
+        state: 'on'
+      - condition: state
+        entity_id: switch.pumpe_1
+        state: 'off'
+      - condition: state
+        entity_id: switch.pumpe_2
+        state: 'off'
+      sequence:
+      - action: notify.mobile_app_karl_s_s26
+        metadata: {}
+        data:
+          title: Schwimmer Alarm
+          message: Schwimmer 24V seit >60s aktiv, aber Pumpe 1 und Pumpe 2 sind aus!
+      - action: notify.mobile_app_sm_helmuth
+        metadata: {}
+        data:
+          title: Schwimmer Alarm
+          message: Schwimmer 24V seit >60s aktiv, aber Pumpe 1 und Pumpe 2 sind aus!
+      - wait_for_trigger:
+        - trigger: state
+          entity_id:
+          - binary_sensor.schalter_schwimmer_24v_input_0
+          to:
+          - 'off'
+        - trigger: state
+          entity_id:
+          - switch.pumpe_1
+          to:
+          - 'on'
+        - trigger: state
+          entity_id:
+          - switch.pumpe_2
+          to:
+          - 'on'
+        timeout:
+          hours: 24
+          minutes: 0
+          seconds: 0
+  mode: single
+- id: '1782738358011'
+  alias: Klima An
+  description: ''
+  triggers:
+  - trigger: sun
+    event: sunrise
+    offset: 0
+  conditions:
+  - condition: numeric_state
+    entity_id: sensor.wettersensor_temperature
+    above: 24
+  actions:
+  - action: climate.set_temperature
+    target:
+      entity_id:
+      - climate.kinderzimmer_2
+      - climate.schlafzimmer_2
+    data:
+      temperature: 24
+      hvac_mode: cool
+  mode: single
+- id: '1785833624760'
+  alias: Schwimmer Benachrichtigung Einschaltdauer
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.schalter_schwimmer_24v_input_0
+    to:
+    - 'off'
+    from:
+    - 'on'
+  conditions: []
+  actions:
+  - action: notify.mobile_app_karl_s_s26
+    metadata: {}
+    data:
+      message: '{% set dauer = trigger.to_state.last_changed - trigger.from_state.last_changed
+        %} {% set sekunden = dauer.total_seconds() | int %} {% set stunden = sekunden
+        // 3600 %} {% set minuten = (sekunden % 3600) // 60 %} {% set rest_sekunden
+        = sekunden % 60 %}
+
+        Der Schwimmer war {{ stunden }} Std, {{ minuten }} Min und {{ rest_sekunden
+        }} Sek eingeschaltet.'
+  - action: notify.mobile_app_sm_helmuth
+    metadata: {}
+    data:
+      message: '{% set dauer = trigger.to_state.last_changed - trigger.from_state.last_changed
+        %} {% set sekunden = dauer.total_seconds() | int %} {% set stunden = sekunden
+        // 3600 %} {% set minuten = (sekunden % 3600) // 60 %} {% set rest_sekunden
+        = sekunden % 60 %}
+
+        Der Schwimmer war {{ stunden }} Std, {{ minuten }} Min und {{ rest_sekunden
+        }} Sek eingeschaltet.'
+  mode: single
+- id: '1785837625227'
+  alias: Klima Fitness Aus 22h
+  description: ''
+  triggers:
+  - trigger: time
+    at: '22:00:00'
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: a5af41e3e8f65e63aafc1df822c87693
+    entity_id: d6bdf30a11594421a08ec35ccc4e3319
+    domain: switch
+  mode: single
+- id: '1786819760681'
+  alias: Lüften Sommer
+  description: ''
+  triggers:
+  - trigger: numeric_state
+    entity_id:
+    - sensor.wettersensor_temperature
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+    below: 24
+  conditions: []
+  actions:
+  - action: scene.turn_on
+    metadata: {}
+    target:
+      entity_id: scene.klf_200_gateway_alle_auf
+    data: {}
+  mode: single
+- id: '1786819859393'
+  alias: Lüften Zu unter 12
+  description: ''
+  triggers:
+  - trigger: numeric_state
+    entity_id:
+    - sensor.wettersensor_temperature
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+    below: 12
+  conditions:
+  - condition: or
+    conditions:
+    - condition: device
+      device_id: 6bdd29cc3a6eb24d8a870d55b222dfae
+      domain: cover
+      entity_id: d465f651c4a67a9ea3d059b904dbbfa5
+      type: is_open
+    - condition: device
+      device_id: 20ea058c234b60545e8b811308ba3e95
+      domain: cover
+      entity_id: 8127d4606c41d58f9cb592a260910b43
+      type: is_open
+    - condition: device
+      device_id: 3a5397fd3f02f3c4c48d4c702d5bbe5c
+      domain: cover
+      entity_id: 2ef22353e9c40a9570507e091f4b72e7
+      type: is_open
+  actions:
+  - device_id: 6bdd29cc3a6eb24d8a870d55b222dfae
+    domain: cover
+    entity_id: d465f651c4a67a9ea3d059b904dbbfa5
+    type: set_position
+    position: 16
+  - device_id: 20ea058c234b60545e8b811308ba3e95
+    domain: cover
+    entity_id: 8127d4606c41d58f9cb592a260910b43
+    type: set_position
+    position: 16
+  - device_id: 3a5397fd3f02f3c4c48d4c702d5bbe5c
+    domain: cover
+    entity_id: 2ef22353e9c40a9570507e091f4b72e7
+    type: set_position
+    position: 16
+  mode: single
+- id: '1786820530463'
+  alias: Lüften Sommer Zu Morgen
+  description: ''
+  triggers:
+  - trigger: time
+    at: 06:30:00
+  conditions:
+  - condition: and
+    conditions:
+    - condition: numeric_state
+      entity_id: sensor.wettersensor_temperature
+      below: 20
+    - condition: device
+      device_id: 6bdd29cc3a6eb24d8a870d55b222dfae
+      domain: cover
+      entity_id: d465f651c4a67a9ea3d059b904dbbfa5
+      type: is_open
+    - condition: device
+      device_id: 20ea058c234b60545e8b811308ba3e95
+      domain: cover
+      entity_id: 8127d4606c41d58f9cb592a260910b43
+      type: is_open
+    - condition: device
+      device_id: 3a5397fd3f02f3c4c48d4c702d5bbe5c
+      domain: cover
+      entity_id: 2ef22353e9c40a9570507e091f4b72e7
+      type: is_open
+  actions:
+  - device_id: 6bdd29cc3a6eb24d8a870d55b222dfae
+    domain: cover
+    entity_id: d465f651c4a67a9ea3d059b904dbbfa5
+    type: set_position
+    position: 15
+  - device_id: 20ea058c234b60545e8b811308ba3e95
+    domain: cover
+    entity_id: 8127d4606c41d58f9cb592a260910b43
+    type: set_position
+    position: 16
+  - device_id: 3a5397fd3f02f3c4c48d4c702d5bbe5c
+    domain: cover
+    entity_id: 2ef22353e9c40a9570507e091f4b72e7
+    type: set_position
+    position: 16
+  mode: single
+- id: '1786820826792'
+  alias: Lüften Sommer Zu über 24
+  description: ''
+  triggers:
+  - trigger: numeric_state
+    entity_id:
+    - sensor.wettersensor_temperature
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+    above: 24
+  conditions: []
+  actions:
+  - action: scene.turn_on
+    metadata: {}
+    target:
+      entity_id: scene.klf_200_gateway_alle_zu
+    data: {}
+  mode: single
+- id: '1787810994162'
+  alias: Warnung Tiefkühler
+  description: ''
+  triggers:
+  - type: temperature
+    device_id: 1bffe17d0581e437226485ad030a5dd1
+    entity_id: 319e5193e8ccb000f819f604fb53e660
+    domain: sensor
+    metadata:
+      secondary: false
+    trigger: device
+    above: -10
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+  conditions: []
+  actions:
+  - action: notify.mobile_app_karl_s_s26
+    metadata: {}
+    data:
+      message: Tiefkühler offen
+      title: Tiefkühler
+  - action: notify.mobile_app_s25
+    metadata: {}
+    data:
+      message: Offen bzw über -10°C
+      title: Tiefkühler
+  mode: single
+- id: '1787811223412'
+  alias: Warnung Kühlschrank
+  description: ''
+  triggers:
+  - type: temperature
+    device_id: 3b4d3650658d3129d250298ac0037f1f
+    entity_id: ca09cb474dee4e9159a3e3118f5e8f10
+    domain: sensor
+    metadata:
+      secondary: false
+    trigger: device
+    above: 16
+    for:
+      hours: 0
+      minutes: 30
+      seconds: 0
+  conditions: []
+  actions:
+  - action: notify.mobile_app_karl_s_s26
+    metadata: {}
+    data:
+      title: Kühlschrank
+      message: Offen bzw über 16°C
+  - action: notify.mobile_app_s25
+    metadata: {}
+    data:
+      message: Offen bzw über 16°C
+      title: 'Kühlschrank '
+  mode: single
+- id: '1787811464565'
+  alias: Warnung Tiefkühler Batterie
+  description: ''
+  triggers:
+  - type: bat_low
+    device_id: 1bffe17d0581e437226485ad030a5dd1
+    entity_id: e639fa3ad286758d733348212426c9eb
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions:
+  - action: notify.mobile_app_karl_s_s26
+    metadata: {}
+    data:
+      message: Batterie tauschen
+      title: 'Tiefkühler '
+  mode: single
+- id: '1788685779057'
+  alias: Ventilator Auto Off
+  description: ''
+  triggers:
+  - type: turned_on
+    device_id: 4df10f10b50894de8523cd52a3b300b7
+    entity_id: 53c36f79ea3e90a305dd27044ae92d3e
+    domain: switch
+    trigger: device
+    for:
+      hours: 4
+      minutes: 0
+      seconds: 0
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: 4df10f10b50894de8523cd52a3b300b7
+    entity_id: 53c36f79ea3e90a305dd27044ae92d3e
+    domain: switch
+  mode: single

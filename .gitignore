@@ -1,0 +1,25 @@
+# Home Assistant Secrets & .storage (Tokens/Auth niemals ins Git!)
+config/secrets.yaml
+secrets.yaml
+config/.storage/
+**/.storage/
+**/.cloud/
+
+# Datenbanken, Logs, Backups, temporäre Dateien
+*.db
+*.db-shm
+*.db-wal
+*.log
+*.log.*
+*.bak_*
+*.corrupt.*
+config/backups/
+config/deps/
+config/tts/
+config/media/
+config/__pycache__/
+**/__pycache__/
+
+# OS / Editor
+.DS_Store
+Thumbs.db

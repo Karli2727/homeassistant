@@ -1,0 +1,209 @@
+alle_aus:
+  sequence:
+  - action: light.turn_off
+    data: {}
+    target:
+      entity_id: all
+  alias: Alle Aus
+  description: ''
+luften_15min:
+  alias: Lüften 15min
+  sequence:
+  - action: scene.turn_on
+    metadata: {}
+    target:
+      entity_id: scene.sommer_auf
+  - delay:
+      hours: 0
+      minutes: 15
+      seconds: 0
+      milliseconds: 0
+  - action: scene.turn_on
+    metadata: {}
+    target:
+      entity_id: scene.alle_zu
+  description: ''
+robi_links_vor:
+  sequence:
+  - action: button.press
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - button.luba_schoderleh_notfall_schub_links
+      - button.luba_schoderleh_notfall_schub_vorwarts
+  alias: Robi - Links Vor
+  description: ''
+robi_rechts_vor:
+  sequence:
+  - action: button.press
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - button.luba_schoderleh_notfall_schub_vorwarts
+      - button.luba_schoderleh_notfall_schub_rechts
+  alias: Robi - Rechts Vor
+  description: ''
+robi_rechts_zuruck:
+  sequence:
+  - action: button.press
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - button.luba_schoderleh_notfall_schub_rechts
+      - button.luba_schoderleh_notfall_schub_ruckwarts
+  alias: Robi - Rechts Zurück
+  description: ''
+robi_links_zuruck:
+  sequence:
+  - action: button.press
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - button.luba_schoderleh_notfall_schub_ruckwarts
+      - button.luba_schoderleh_notfall_schub_links
+  alias: Robi - Links Zurück
+  description: ''
+aroma_aus:
+  sequence:
+  - action: humidifier.turn_off
+    metadata: {}
+    data: {}
+    target:
+      device_id: dbf0d9a5f561d7fa06da173397db90fe
+  alias: Aroma Aus
+  description: ''
+s6_kamera_auslosen:
+  alias: Biomechanik S6 Aufnahme mit Timer
+  sequence:
+  - action: notify.mobile_app_s6
+    data:
+      message: command_screen_on
+  - delay:
+      milliseconds: 1500
+  - action: notify.mobile_app_s6
+    data:
+      message: command_activity
+      data:
+        intent_action: android.media.action.VIDEO_CAPTURE
+  - delay:
+      milliseconds: 1500
+  - action: androidtv.adb_command
+    target:
+      entity_id: media_player.s6
+    data:
+      command: input keyevent 24
+  - delay:
+      seconds: '{{ states(''input_number.aufnahme_dauer'') | int(10) }}'
+  - action: androidtv.adb_command
+    target:
+      entity_id: media_player.s6
+    data:
+      command: input keyevent 24
+  - delay:
+      milliseconds: 1500
+  - action: androidtv.adb_command
+    target:
+      entity_id: media_player.s6
+    data:
+      command: input keyevent 26
+  mode: single
+  icon: mdi:video-switch
+  description: Weckt das S6 auf, startet die Aufnahme, wartet die im Helfer definierte
+    Dauer ab, stoppt sie und schaltet den Bildschirm aus.
+s22_fe_kamera_test:
+  alias: Biomechanik S22FE Aufnahme mit Timer
+  sequence:
+  - action: androidtv.adb_command
+    target:
+      entity_id: media_player.s22fe
+    data:
+      command: input keyevent 26
+  - delay:
+      milliseconds: 1000
+  - action: remote.send_command
+    target:
+      entity_id: remote.s22fe
+    data:
+      command: am start -a android.media.action.STILL_IMAGE_CAMERA
+  - delay:
+      milliseconds: 2000
+  - action: remote.send_command
+    target:
+      entity_id: remote.s22fe
+    data:
+      command: input tap 955 1775
+  - delay:
+      milliseconds: 1500
+  - action: remote.send_command
+    target:
+      entity_id: remote.s22fe
+    data:
+      command: input tap 550 1150
+  - delay:
+      milliseconds: 2500
+  - action: remote.send_command
+    target:
+      entity_id: remote.s22fe
+    data:
+      command: input tap 540 2030
+  - delay:
+      seconds: '{{ states(''input_number.aufnahme_dauer'') | int(10) }}'
+  - action: remote.send_command
+    target:
+      entity_id: remote.s22fe
+    data:
+      command: input tap 620 2030
+  - delay:
+      milliseconds: 1000
+  - action: remote.send_command
+    target:
+      entity_id: remote.s22fe
+    data:
+      command: input keyevent 3
+  - action: androidtv.adb_command
+    target:
+      entity_id: media_player.s22fe
+    data:
+      command: input keyevent 26
+  mode: single
+  icon: mdi:video-switch
+  description: Startet die Kamera, wartet die im Helfer definierte Dauer ab, stoppt
+    die Aufnahme und schaltet den Bildschirm aus.
+biomechanik_beide_kameras_starten:
+  alias: Biomechanik Beide Kameras Starten
+  sequence:
+  - action: script.turn_on
+    target:
+      entity_id:
+      - script.biomechanik_s6_aufnahme_mit_timer
+      - script.biomechanik_s22fe_aufnahme_mit_timer
+  mode: single
+  icon: mdi:video-box
+  description: Startet S6 und S22 FE absolut gleichzeitig mit der definierten Timer-Laufzeit.
+rf_bridge_taste_1:
+  alias: RF Bridge Test Direkt
+  sequence:
+  - action: mqtt.publish
+    data:
+      topic: cmnd/RF_Bridge/RfSend
+      payload: '{"Sync":10930,"Low":340,"High":1050,"Data":"152D21"}'
+  mode: single
+rf_bridge_taste_2:
+  alias: RF Bridge Taste 2
+  sequence:
+  - action: mqtt.publish
+    data:
+      topic: cmnd/RF_Bridge/RfKey2
+      payload: '1'
+  mode: single
+rf_bridge_test_tasmota_send:
+  alias: RF Bridge Taste 1
+  sequence:
+  - action: button.press
+    target:
+      entity_id: button.rf_bridge_rfkey_1
+  mode: single
