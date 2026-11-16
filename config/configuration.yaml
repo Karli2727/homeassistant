@@ -362,6 +362,14 @@ input_select:
       - "Smart (Auto-Prio)"
 
 input_boolean:
+  goe_ks_wintermodus:
+    name: "go-e KS Wintermodus (direkt laden)"
+    initial: false
+    icon: mdi:snowflake-alert
+  goe_gs_wintermodus:
+    name: "go-e GS Wintermodus (direkt laden)"
+    initial: false
+    icon: mdi:snowflake-alert
   goe_ks_notify:
     name: "go-e KS Benachrichtigungen (EV5)"
     initial: true
