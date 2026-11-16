@@ -209,3 +209,37 @@ template:
           {% else %}
             {{ this.state | default(0.0) }}
           {% endif %}
+
+input_number:
+  pumpe_1_dauer_log:
+    name: "Pumpe 1 Letzte Pumpung (min)"
+    min: 0
+    max: 1440
+    step: 0.1
+    mode: box
+    unit_of_measurement: "min"
+    icon: "mdi:clock-time-eight-outline"
+  pumpe_2_dauer_log:
+    name: "Pumpe 2 Letzte Pumpung (min)"
+    min: 0
+    max: 1440
+    step: 0.1
+    mode: box
+    unit_of_measurement: "min"
+    icon: "mdi:clock-time-eight-outline"
+  pumpe_1_liter_log:
+    name: "Pumpe 1 Letzte Pumpung (l)"
+    min: 0
+    max: 100000
+    step: 0.1
+    mode: box
+    unit_of_measurement: "l"
+    icon: "mdi:water"
+  pumpe_2_liter_log:
+    name: "Pumpe 2 Letzte Pumpung (l)"
+    min: 0
+    max: 100000
+    step: 0.1
+    mode: box
+    unit_of_measurement: "l"
+    icon: "mdi:water"

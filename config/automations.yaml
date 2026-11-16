@@ -652,6 +652,11 @@
     data: {}
     target:
       entity_id: input_boolean.pumpe_2_aus_helfer
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.pumpe_2_dauer_log
+    data:
+      value: '{{ ((as_timestamp(now()) - as_timestamp(states.input_boolean.pumpe_2_an_helfer.last_changed, as_timestamp(now()))) / 60) | round(1) }}'
   - delay:
       hours: 0
       minutes: 2
@@ -662,6 +667,11 @@
       entity_id: input_number.pumpe_2_aus_stand
     data_template:
       value: '{{ states(''sensor.durchfluss_brunnen_1_2_counter_c2'') }}'
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.pumpe_2_liter_log
+    data:
+      value: '{{ max((states(''sensor.durchfluss_brunnen_1_2_counter_c2'') | float(0) - states(''input_number.pumpe_2_an_stand'') | float(0)) | round(1), 0) }}'
   mode: single
 - id: '1763923754062'
   alias: Pumpe 1 BOOLEAN AUS
@@ -693,6 +703,11 @@
     data: {}
     target:
       entity_id: input_boolean.pumpe_1_aus_helfer
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.pumpe_1_dauer_log
+    data:
+      value: '{{ ((as_timestamp(now()) - as_timestamp(states.input_boolean.pumpe_1_an_helfer.last_changed, as_timestamp(now()))) / 60) | round(1) }}'
   - delay:
       hours: 0
       minutes: 2
@@ -703,6 +718,11 @@
       entity_id: input_number.pumpe_1_aus_stand
     data_template:
       value: '{{ states(''sensor.durchfluss_brunnen_1_2_counter_c1'') }}'
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.pumpe_1_liter_log
+    data:
+      value: '{{ max((states(''sensor.durchfluss_brunnen_1_2_counter_c1'') | float(0) - states(''input_number.pumpe_1_an_stand'') | float(0)) | round(1), 0) }}'
   mode: single
 - id: '1763981630185'
   alias: Pumpe Leerlauf Aus
