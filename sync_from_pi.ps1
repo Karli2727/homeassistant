@@ -14,6 +14,7 @@ $RepoRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ConfigDir = Join-Path $RepoRoot "config"
 $PiHost = "pi@192.168.1.250"
 $RemoteBase = "/home/pi/homeassistant"
+$SshOpts = @("-o", "BatchMode=yes", "-o", "ConnectTimeout=5")
 
 New-Item -ItemType Directory -Force -Path $ConfigDir | Out-Null
 
@@ -27,26 +28,27 @@ $Files = @(
 )
 
 foreach ($f in $Files) {
-    scp -q "${PiHost}:${RemoteBase}/$f" (Join-Path $ConfigDir $f)
+    scp @SshOpts -q "${PiHost}:${RemoteBase}/$f" (Join-Path $ConfigDir $f)
 }
 
 # Optionale Verzeichnisse (themes, blueprints), falls vorhanden
 foreach ($dir in @("themes", "blueprints")) {
-    $exists = ssh $PiHost "test -d ${RemoteBase}/$dir && echo yes || echo no"
+    $exists = ssh @SshOpts $PiHost "test -d ${RemoteBase}/$dir && echo yes || echo no"
     if ($exists -eq "yes") {
         $localSub = Join-Path $ConfigDir $dir
         New-Item -ItemType Directory -Force -Path $localSub | Out-Null
-        scp -rq "${PiHost}:${RemoteBase}/$dir/*" $localSub 2>$null
+        scp @SshOpts -rq "${PiHost}:${RemoteBase}/$dir/*" $localSub 2>$null
     }
 }
 
-# core.config_entries wird aus Sicherheitsgründen (OAuth/API-Tokens) per .gitignore nicht ins Git gepusht,
-# sondern nur lokal unter config\.storage\ als Backup abgelegt.
+# .storage Backups (core.config_entries, core.entity_registry)
 $StorageDir = Join-Path $ConfigDir ".storage"
 New-Item -ItemType Directory -Force -Path $StorageDir | Out-Null
-ssh $PiHost "sudo -n cat ${RemoteBase}/.storage/core.config_entries" | Set-Content -Encoding UTF8 (Join-Path $StorageDir "core.config_entries")
 
-Write-Host "Sync nach $ConfigDir abgeschlossen." -ForegroundColor Green
+ssh @SshOpts $PiHost "cat ${RemoteBase}/.storage/core.config_entries" | Set-Content -Encoding UTF8 (Join-Path $StorageDir "core.config_entries")
+ssh @SshOpts $PiHost "cat ${RemoteBase}/.storage/core.entity_registry" | Set-Content -Encoding UTF8 (Join-Path $StorageDir "core.entity_registry")
+
+Write-Host "Sync nach $ConfigDir erfolgreich abgeschlossen." -ForegroundColor Green
 
 if ($Push) {
     Push-Location $RepoRoot
