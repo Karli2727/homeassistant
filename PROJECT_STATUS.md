@@ -16,11 +16,14 @@ Stand: 15.11.2026, 23:12 Uhr
   - Mosquitto MQTT & Hof-Steuerung
 - **Synology NAS (`192.168.1.210`):**
   - Reiner passiver Backup-Datenspeicher
-- **Laufwerks-Zuordnung (Windows Host):**
-  - `H:` = `Klein-Schoderleh-Pi`
-  - `I:` = `Gut-Schoderleh-Pi`
+- **Laufwerks-Zuordnung (Windows Host via Rclone & SSH-Key `id_ed25519`):**
+  - `H:` = `Klein-Schoderleh-Pi` (`192.168.1.250`, `\\server\Klein-Schoderleh-Pi`)
+  - `I:` = `Gut-Schoderleh-Pi` (`172.17.0.154`, `\\server\Gut-Schoderleh-Pi`)
+  - `R:` = `Retro-Fotobox` (`access-5021513742...`, `\\server\Retro-Fotobox`)
+  - `L:` = `LetterboxStudio` (`access-5021845669...`, `\\server\LetterboxStudio`)
   - `Y:` = `Netzwerkplatte` (Synology `\\192.168.1.210\home`)
   - `Z:` = `Fritz NAS` (`\\192.168.1.1\Mediaserver`)
+  - **Autostart:** `mount_silent.vbs` in Windows-Startup ruft `mount_drives.ps1` komplett fensterlos auf (`-WindowStyle Hidden --no-console --links`).
 
 ---
 

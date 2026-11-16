@@ -29,73 +29,100 @@ homeassistant:
         - 172.17.0.0/24
   customize:
     sensor.brunnen_1_stunde:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
       state_class: total_increasing
     sensor.brunnen_2_stunde:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
       state_class: total_increasing
     sensor.brunnen_1_jahresverbrauch:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
       state_class: total_increasing
     sensor.brunnen_2_jahresverbrauch:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
       state_class: total_increasing
     sensor.brunnen_gesamt_jahresverbrauch:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
       state_class: total_increasing
     sensor.durchfluss_gesamt_jahresverbrauch:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
       state_class: total_increasing
     sensor.durchfluss_gut_schoderleh_jahresverbrauch:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
       state_class: total_increasing
     sensor.durchfluss_stall_gebaude_jahresverbrauch:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
       state_class: total_increasing
     sensor.durchfluss_klein_schoderleh_jahresverbrauch:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
       state_class: total_increasing
     sensor.durchfluss_traenker_1_jahresverbrauch:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
       state_class: total_increasing
     sensor.durchfluss_traenker_2_jahresverbrauch:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
       state_class: total_increasing
     sensor.durchfluss_traenker_3_jahresverbrauch:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
       state_class: total_increasing
     sensor.durchfluss_stall_eingang_jahresverbrauch:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
       state_class: total_increasing
     sensor.durchfluss_haus_eingang_jahresverbrauch:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
       state_class: total_increasing
     sensor.durchfluss_menschen_jahresverbrauch:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
       state_class: total_increasing
     sensor.durchfluss_pferde_jahresverbrauch:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
       state_class: total_increasing
     sensor.brunnen_gesamt:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
       state_class: measurement
     sensor.durchfluss_gut_schoderleh:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
       state_class: measurement
     sensor.durchfluss_gesamt:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
       state_class: measurement
     sensor.durchfluss_delta:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
       state_class: measurement
     sensor.durchfluss_stall_gebaude_2:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
       state_class: measurement
     sensor.durchfluss_menschen:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
       state_class: measurement
     sensor.durchfluss_pferde:
-      unit_of_measurement: "L"
+      unit_of_measurement: "l"
+      state_class: measurement
+    sensor.durchfluss_brunnen_1_2_counter_c1:
+      unit_of_measurement: "l"
+      state_class: total_increasing
+    sensor.durchfluss_brunnen_1_2_counter_c2:
+      unit_of_measurement: "l"
+      state_class: total_increasing
+    sensor.durchfluss_waschkueche_counter_c1:
+      unit_of_measurement: "l"
+      state_class: total_increasing
+    sensor.durchfluss_waschkueche_counter_c2:
+      unit_of_measurement: "l"
+      state_class: total_increasing
+    sensor.durchfluss_waschkueche_counter_c3:
+      unit_of_measurement: "l"
+      state_class: total_increasing
+    sensor.durchfluss_heizraum_counter_c1:
+      unit_of_measurement: "l"
+      state_class: total_increasing
+    sensor.durchfluss_stall_counter_c1:
+      unit_of_measurement: "l"
+      state_class: total_increasing
+    sensor.durchfluss_stall_counter_c2:
+      unit_of_measurement: "l"
+      state_class: total_increasing
+    sensor.traenker_4_burschis:
+      unit_of_measurement: "l"
       state_class: measurement
 
 
