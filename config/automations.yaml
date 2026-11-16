@@ -2184,3 +2184,25 @@
           - input_boolean.goe_ks_wintermodus
           - input_boolean.goe_gs_wintermodus
   mode: single
+
+- id: '202611160010'
+  alias: Velux Stromwächter (Auto-Einschalten)
+  description: Stellt sicher, dass das Velux KLF-200 Gateway nach einem HA-Neustart oder versehentlichem Ausschalten immer eingeschaltet ist.
+  mode: restart
+  triggers:
+  - trigger: homeassistant
+    event: start
+  - trigger: state
+    entity_id: switch.licht_tischlampe_fernseher
+    to: 'off'
+    for:
+      seconds: 25
+  actions:
+  - delay:
+      seconds: 5
+  - condition: state
+    entity_id: switch.licht_tischlampe_fernseher
+    state: 'off'
+  - action: switch.turn_on
+    target:
+      entity_id: switch.licht_tischlampe_fernseher
