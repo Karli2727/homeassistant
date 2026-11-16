@@ -267,20 +267,106 @@ input_number:
     mode: slider
     unit_of_measurement: "%"
     icon: mdi:battery-charging-high
+  goe_ks_auto_soc_dummy:
+    name: "go-e KS Auto-SOC (Dummy)"
+    min: 0
+    max: 100
+    step: 1
+    initial: 50
+    mode: slider
+    unit_of_measurement: "%"
+    icon: mdi:car-battery
+  goe_ks_auto_ziel_soc:
+    name: "go-e KS Auto-Ladeziel"
+    min: 50
+    max: 100
+    step: 5
+    initial: 80
+    mode: slider
+    unit_of_measurement: "%"
+    icon: mdi:battery-check
+  goe_ks_auto_min_soc:
+    name: "go-e KS Auto Not-Reserve"
+    min: 10
+    max: 60
+    step: 5
+    initial: 30
+    mode: slider
+    unit_of_measurement: "%"
+    icon: mdi:battery-alert
+  goe_ks_forecast_schwelle:
+    name: "go-e KS PV-Forecast Schwelle"
+    min: 0
+    max: 40
+    step: 1
+    initial: 12
+    mode: slider
+    unit_of_measurement: "kWh"
+    icon: mdi:weather-sunny-alert
+  goe_gs_auto_soc_dummy:
+    name: "go-e GS Auto-SOC (Dummy)"
+    min: 0
+    max: 100
+    step: 1
+    initial: 50
+    mode: slider
+    unit_of_measurement: "%"
+    icon: mdi:car-battery
+  goe_gs_auto_ziel_soc:
+    name: "go-e GS Auto-Ladeziel"
+    min: 50
+    max: 100
+    step: 5
+    initial: 80
+    mode: slider
+    unit_of_measurement: "%"
+    icon: mdi:battery-check
+  goe_gs_auto_min_soc:
+    name: "go-e GS Auto Not-Reserve"
+    min: 10
+    max: 60
+    step: 5
+    initial: 30
+    mode: slider
+    unit_of_measurement: "%"
+    icon: mdi:battery-alert
+  goe_gs_forecast_schwelle:
+    name: "go-e GS PV-Forecast Schwelle"
+    min: 0
+    max: 40
+    step: 1
+    initial: 12
+    mode: slider
+    unit_of_measurement: "kWh"
+    icon: mdi:weather-sunny-alert
 input_select:
   goe_ks_lademodus:
     name: "go-e Klein Schoderleh Lademodus"
     icon: mdi:ev-station
     options:
+      - "Manuell (App / Frei)"
       - "Aus"
       - "Sofort (Max)"
       - "PV-Überschuss"
       - "PV + Eco (Batterieschutz)"
+      - "Smart (Auto-Prio)"
   goe_gs_lademodus:
     name: "go-e Gut Schoderleh Lademodus"
     icon: mdi:ev-station
     options:
+      - "Manuell (App / Frei)"
       - "Aus"
       - "Sofort (Max)"
       - "PV-Überschuss"
       - "PV + Eco (Batterieschutz)"
+      - "Smart (Auto-Prio)"
+
+input_boolean:
+  goe_ks_notify:
+    name: "go-e KS Benachrichtigungen (EV5)"
+    initial: true
+    icon: mdi:bell-ring
+  goe_gs_notify:
+    name: "go-e GS Benachrichtigungen (Niro / Helmuth)"
+    initial: false
+    icon: mdi:bell-off

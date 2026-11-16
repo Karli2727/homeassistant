@@ -655,7 +655,8 @@
     target:
       entity_id: input_number.pumpe_2_dauer_log
     data:
-      value: '{{ ((as_timestamp(now()) - as_timestamp(states.input_boolean.pumpe_2_an_helfer.last_changed, as_timestamp(now()))) / 60) | round(1) }}'
+      value: '{{ ((as_timestamp(now()) - as_timestamp(states.input_boolean.pumpe_2_an_helfer.last_changed,
+        as_timestamp(now()))) / 60) | round(1) }}'
   - delay:
       hours: 0
       minutes: 2
@@ -670,7 +671,8 @@
     target:
       entity_id: input_number.pumpe_2_liter_log
     data:
-      value: '{{ max((states(''sensor.durchfluss_brunnen_1_2_counter_c2'') | float(0) - states(''input_number.pumpe_2_an_stand'') | float(0)) | round(1), 0) }}'
+      value: '{{ max((states(''sensor.durchfluss_brunnen_1_2_counter_c2'') | float(0)
+        - states(''input_number.pumpe_2_an_stand'') | float(0)) | round(1), 0) }}'
   mode: single
 - id: '1763923754062'
   alias: Pumpe 1 BOOLEAN AUS
@@ -706,7 +708,8 @@
     target:
       entity_id: input_number.pumpe_1_dauer_log
     data:
-      value: '{{ ((as_timestamp(now()) - as_timestamp(states.input_boolean.pumpe_1_an_helfer.last_changed, as_timestamp(now()))) / 60) | round(1) }}'
+      value: '{{ ((as_timestamp(now()) - as_timestamp(states.input_boolean.pumpe_1_an_helfer.last_changed,
+        as_timestamp(now()))) / 60) | round(1) }}'
   - delay:
       hours: 0
       minutes: 2
@@ -721,7 +724,8 @@
     target:
       entity_id: input_number.pumpe_1_liter_log
     data:
-      value: '{{ max((states(''sensor.durchfluss_brunnen_1_2_counter_c1'') | float(0) - states(''input_number.pumpe_1_an_stand'') | float(0)) | round(1), 0) }}'
+      value: '{{ max((states(''sensor.durchfluss_brunnen_1_2_counter_c1'') | float(0)
+        - states(''input_number.pumpe_1_an_stand'') | float(0)) | round(1), 0) }}'
   mode: single
 - id: '1763981630185'
   alias: Pumpe Leerlauf Aus
@@ -1207,7 +1211,7 @@
   - trigger: state
     entity_id:
     - sensor.web_scrape
-    from:
+    from: null
   conditions: []
   actions:
   - action: notify.mobile_app_karl_s_s26
@@ -1231,7 +1235,8 @@
   mode: single
 - id: '1780849447234'
   alias: Schwimmer 24h Warnung
-  description: Alarm bei Schwimmer >60s aktiv und beide Pumpen aus (Wiederholung nach 24h)
+  description: Alarm bei Schwimmer >60s aktiv und beide Pumpen aus (Wiederholung nach
+    24h)
   triggers:
   - trigger: state
     entity_id:
@@ -1400,7 +1405,7 @@
   description: Schließt alle 3 Dachfenster morgens um 06:30 unter 20°C
   triggers:
   - trigger: time
-    at: '06:30:00'
+    at: 06:30:00
   conditions:
   - condition: numeric_state
     entity_id: sensor.wettersensor_temperature
@@ -1545,9 +1550,9 @@
     entity_id: 53c36f79ea3e90a305dd27044ae92d3e
     domain: switch
   mode: single
-- id: 'onleihe_neue_buecher'
-  alias: "Onleihe: Neue Bücher benachrichtigen"
-  description: "Empfängt neue Onleihe-Titel vom Pi-Skript und sendet eine Push-Nachricht."
+- id: onleihe_neue_buecher
+  alias: 'Onleihe: Neue Bücher benachrichtigen'
+  description: Empfängt neue Onleihe-Titel vom Pi-Skript und sendet eine Push-Nachricht.
   triggers:
   - trigger: webhook
     webhook_id: onleihe_neue_buecher
@@ -1558,12 +1563,11 @@
   actions:
   - action: notify.mobile_app_karl_s_s26
     data:
-      title: "{{ trigger.json.title }}"
-      message: "{{ trigger.json.message }}"
+      title: '{{ trigger.json.title }}'
+      message: '{{ trigger.json.message }}'
       data:
-        clickAction: "app://de.divibib.onleihe3"
+        clickAction: app://de.divibib.onleihe3
   mode: queued
-
 - id: '202611160001'
   alias: go-e KS Modus-Umschaltung
   description: Reagiert sofort auf Aus oder Sofort (Max) für go-e Klein Schoderleh
@@ -1573,6 +1577,26 @@
   conditions: []
   actions:
   - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_select.goe_ks_lademodus
+        state: Manuell (App / Frei)
+      sequence:
+      - action: select.select_option
+        target:
+          entity_id: select.goe_337853_psm
+        data:
+          option: '0'
+      - action: number.set_value
+        target:
+          entity_id: number.goe_337853_amp
+        data:
+          value: 16
+      - action: select.select_option
+        target:
+          entity_id: select.goe_337853_frc
+        data:
+          option: '0'
     - conditions:
       - condition: state
         entity_id: input_select.goe_ks_lademodus
@@ -1604,9 +1628,70 @@
         data:
           option: '2'
   mode: restart
+- id: '202611160003'
+  alias: go-e GS Modus-Umschaltung
+  description: Reagiert sofort auf Aus oder Sofort (Max) für go-e Gut Schoderleh
+  triggers:
+  - trigger: state
+    entity_id: input_select.goe_gs_lademodus
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_select.goe_gs_lademodus
+        state: Manuell (App / Frei)
+      sequence:
+      - action: select.select_option
+        target:
+          entity_id: select.goe_081320_psm
+        data:
+          option: '0'
+      - action: number.set_value
+        target:
+          entity_id: number.goe_081320_amp
+        data:
+          value: 16
+      - action: select.select_option
+        target:
+          entity_id: select.goe_081320_frc
+        data:
+          option: '0'
+    - conditions:
+      - condition: state
+        entity_id: input_select.goe_gs_lademodus
+        state: Aus
+      sequence:
+      - action: select.select_option
+        target:
+          entity_id: select.goe_081320_frc
+        data:
+          option: '1'
+    - conditions:
+      - condition: state
+        entity_id: input_select.goe_gs_lademodus
+        state: Sofort (Max)
+      sequence:
+      - action: select.select_option
+        target:
+          entity_id: select.goe_081320_psm
+        data:
+          option: '2'
+      - action: number.set_value
+        target:
+          entity_id: number.goe_081320_amp
+        data:
+          value: 16
+      - action: select.select_option
+        target:
+          entity_id: select.goe_081320_frc
+        data:
+          option: '2'
+  mode: restart
 - id: '202611160002'
-  alias: go-e KS PV-Überschuss Regelung
-  description: Dynamische 1p/3p PV-Überschussregelung für go-e Klein Schoderleh
+  alias: go-e KS PV-Überschuss & Smart Regelung
+  description: Dynamische 1p/3p PV-Überschuss- und Smart-Auto-Prio-Regelung für go-e
+    Klein Schoderleh
   triggers:
   - trigger: time_pattern
     seconds: /30
@@ -1622,22 +1707,45 @@
     - condition: state
       entity_id: input_select.goe_ks_lademodus
       state: PV + Eco (Batterieschutz)
+    - condition: state
+      entity_id: input_select.goe_ks_lademodus
+      state: Smart (Auto-Prio)
   actions:
   - variables:
-      modus: "{{ states('input_select.goe_ks_lademodus') }}"
-      soc: "{{ states('sensor.reserva_ks_ladezustand') | float(0) }}"
-      min_soc: "{{ states('input_number.goe_ks_min_soc') | float(20) }}"
-      prio_soc: "{{ states('input_number.goe_ks_bat_prio_soc') | float(50) }}"
-      einspeisung: "{{ states('sensor.solarnet_ks_leistung_netzeinspeisung') | float(0) }}"
-      bezug: "{{ states('sensor.solarnet_ks_leistung_netzbezug') | float(0) }}"
-      bat_lade: "{{ states('sensor.solarnet_ks_ladeleistung') | float(0) }}"
-      car_w: "{{ states('sensor.goe_337853_nrg_11') | float(0) }}"
-      surplus: "{{ (einspeisung - bezug + car_w + (bat_lade if soc >= prio_soc else 0)) | float(0) }}"
-      is_charging: "{{ states('select.goe_337853_frc') == '2' }}"
+      modus: '{{ states(''input_select.goe_ks_lademodus'') }}'
+      soc: '{{ states(''sensor.reserva_ks_ladezustand'') | float(0) }}'
+      min_soc: '{{ states(''input_number.goe_ks_min_soc'') | float(20) }}'
+      prio_soc: '{{ states(''input_number.goe_ks_bat_prio_soc'') | float(50) }}'
+      auto_soc: '{{ states(''input_number.goe_ks_auto_soc_dummy'') | float(50) }}'
+      auto_ziel: '{{ states(''input_number.goe_ks_auto_ziel_soc'') | float(80) }}'
+      auto_min: '{{ states(''input_number.goe_ks_auto_min_soc'') | float(30) }}'
+      fc_morgen: '{{ states(''sensor.energy_production_tomorrow_2'') | float(0) }}'
+      fc_schwelle: '{{ states(''input_number.goe_ks_forecast_schwelle'') | float(12)
+        }}'
+      wintermodus: '{{ is_state(''input_boolean.goe_ks_wintermodus'', ''on'') }}'
+      is_night: '{{ now().hour >= 20 or now().hour < 6 }}'
+      einspeisung: '{{ states(''sensor.solarnet_ks_leistung_netzeinspeisung'') | float(0)
+        }}'
+      bezug: '{{ states(''sensor.solarnet_ks_leistung_netzbezug'') | float(0) }}'
+      bat_lade: '{{ states(''sensor.solarnet_ks_ladeleistung'') | float(0) }}'
+      car_w: '{{ states(''sensor.goe_337853_nrg_11'') | float(0) }}'
+      surplus: '{{ (einspeisung - bezug + car_w + (bat_lade if soc >= prio_soc else
+        0)) | float(0) }}'
+      is_charging: '{{ states(''select.goe_337853_frc'') == ''2'' }}'
   - choose:
     - conditions:
       - condition: template
-        value_template: "{{ surplus >= 4200 }}"
+        value_template: '{{ auto_soc >= auto_ziel }}'
+      sequence:
+      - action: select.select_option
+        target:
+          entity_id: select.goe_337853_frc
+        data:
+          option: '1'
+    - conditions:
+      - condition: template
+        value_template: '{{ modus == ''Smart (Auto-Prio)'' and (wintermodus or auto_soc
+          < auto_min or (fc_morgen < fc_schwelle and is_night)) }}'
       sequence:
       - action: select.select_option
         target:
@@ -1648,7 +1756,7 @@
         target:
           entity_id: number.goe_337853_amp
         data:
-          value: "{{ [16, [6, (surplus / 690) | int] | max] | min }}"
+          value: 16
       - action: select.select_option
         target:
           entity_id: select.goe_337853_frc
@@ -1656,7 +1764,26 @@
           option: '2'
     - conditions:
       - condition: template
-        value_template: "{{ surplus >= 1380 or (is_charging and surplus >= 1100) }}"
+        value_template: '{{ surplus >= 4200 }}'
+      sequence:
+      - action: select.select_option
+        target:
+          entity_id: select.goe_337853_psm
+        data:
+          option: '2'
+      - action: number.set_value
+        target:
+          entity_id: number.goe_337853_amp
+        data:
+          value: '{{ [16, [6, (surplus / 690) | int] | max] | min }}'
+      - action: select.select_option
+        target:
+          entity_id: select.goe_337853_frc
+        data:
+          option: '2'
+    - conditions:
+      - condition: template
+        value_template: '{{ surplus >= 1380 or (is_charging and surplus >= 1100) }}'
       sequence:
       - action: select.select_option
         target:
@@ -1667,7 +1794,7 @@
         target:
           entity_id: number.goe_337853_amp
         data:
-          value: "{{ [16, [6, (surplus / 230) | int] | max] | min }}"
+          value: '{{ [16, [6, (surplus / 230) | int] | max] | min }}'
       - action: select.select_option
         target:
           entity_id: select.goe_337853_frc
@@ -1675,7 +1802,8 @@
           option: '2'
     - conditions:
       - condition: template
-        value_template: "{{ modus == 'PV + Eco (Batterieschutz)' and soc > min_soc }}"
+        value_template: '{{ modus == ''PV + Eco (Batterieschutz)'' and soc > min_soc
+          }}'
       sequence:
       - action: select.select_option
         target:
@@ -1699,19 +1827,54 @@
       data:
         option: '1'
   mode: single
-- id: '202611160003'
-  alias: go-e GS Modus-Umschaltung
-  description: Reagiert sofort auf Aus oder Sofort (Max) für go-e Gut Schoderleh
+- id: '202611160004'
+  alias: go-e GS PV-Überschuss & Smart Regelung
+  description: Dynamische 1p/3p PV-Überschuss- und Smart-Auto-Prio-Regelung für go-e
+    Gut Schoderleh
   triggers:
-  - trigger: state
-    entity_id: input_select.goe_gs_lademodus
-  conditions: []
+  - trigger: time_pattern
+    seconds: /30
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.goe_081320_car_0
+    state: 'on'
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: input_select.goe_gs_lademodus
+      state: PV-Überschuss
+    - condition: state
+      entity_id: input_select.goe_gs_lademodus
+      state: PV + Eco (Batterieschutz)
+    - condition: state
+      entity_id: input_select.goe_gs_lademodus
+      state: Smart (Auto-Prio)
   actions:
+  - variables:
+      modus: '{{ states(''input_select.goe_gs_lademodus'') }}'
+      soc: '{{ states(''sensor.byd_battery_box_gs_ladezustand'') | float(0) }}'
+      min_soc: '{{ states(''input_number.goe_gs_min_soc'') | float(20) }}'
+      prio_soc: '{{ states(''input_number.goe_gs_bat_prio_soc'') | float(50) }}'
+      auto_soc: '{{ states(''input_number.goe_gs_auto_soc_dummy'') | float(50) }}'
+      auto_ziel: '{{ states(''input_number.goe_gs_auto_ziel_soc'') | float(80) }}'
+      auto_min: '{{ states(''input_number.goe_gs_auto_min_soc'') | float(30) }}'
+      fc_morgen: '{{ states(''sensor.energy_production_tomorrow_2'') | float(0) }}'
+      fc_schwelle: '{{ states(''input_number.goe_gs_forecast_schwelle'') | float(12)
+        }}'
+      wintermodus: '{{ is_state(''input_boolean.goe_gs_wintermodus'', ''on'') }}'
+      is_night: '{{ now().hour >= 20 or now().hour < 6 }}'
+      einspeisung: '{{ states(''sensor.solarnet_gs_leistung_netzeinspeisung'') | float(0)
+        }}'
+      bezug: '{{ states(''sensor.solarnet_gs_leistung_netzbezug'') | float(0) }}'
+      bat_lade: '{{ states(''sensor.solarnet_gs_ladeleistung'') | float(0) }}'
+      car_w: '{{ states(''sensor.goe_081320_nrg_11'') | float(0) }}'
+      surplus: '{{ (einspeisung - bezug + car_w + (bat_lade if soc >= prio_soc else
+        0)) | float(0) }}'
+      is_charging: '{{ states(''select.goe_081320_frc'') == ''2'' }}'
   - choose:
     - conditions:
-      - condition: state
-        entity_id: input_select.goe_gs_lademodus
-        state: Aus
+      - condition: template
+        value_template: '{{ auto_soc >= auto_ziel }}'
       sequence:
       - action: select.select_option
         target:
@@ -1719,9 +1882,9 @@
         data:
           option: '1'
     - conditions:
-      - condition: state
-        entity_id: input_select.goe_gs_lademodus
-        state: Sofort (Max)
+      - condition: template
+        value_template: '{{ modus == ''Smart (Auto-Prio)'' and (wintermodus or auto_soc
+          < auto_min or (fc_morgen < fc_schwelle and is_night)) }}'
       sequence:
       - action: select.select_option
         target:
@@ -1738,41 +1901,9 @@
           entity_id: select.goe_081320_frc
         data:
           option: '2'
-  mode: restart
-- id: '202611160004'
-  alias: go-e GS PV-Überschuss Regelung
-  description: Dynamische 1p/3p PV-Überschussregelung für go-e Gut Schoderleh
-  triggers:
-  - trigger: time_pattern
-    seconds: /30
-  conditions:
-  - condition: state
-    entity_id: binary_sensor.goe_081320_car_0
-    state: 'on'
-  - condition: or
-    conditions:
-    - condition: state
-      entity_id: input_select.goe_gs_lademodus
-      state: PV-Überschuss
-    - condition: state
-      entity_id: input_select.goe_gs_lademodus
-      state: PV + Eco (Batterieschutz)
-  actions:
-  - variables:
-      modus: "{{ states('input_select.goe_gs_lademodus') }}"
-      soc: "{{ states('sensor.byd_battery_box_gs_ladezustand') | float(0) }}"
-      min_soc: "{{ states('input_number.goe_gs_min_soc') | float(20) }}"
-      prio_soc: "{{ states('input_number.goe_gs_bat_prio_soc') | float(50) }}"
-      einspeisung: "{{ states('sensor.solarnet_gs_leistung_netzeinspeisung') | float(0) }}"
-      bezug: "{{ states('sensor.solarnet_gs_leistung_netzbezug') | float(0) }}"
-      bat_lade: "{{ states('sensor.solarnet_gs_ladeleistung') | float(0) }}"
-      car_w: "{{ states('sensor.goe_081320_nrg_11') | float(0) }}"
-      surplus: "{{ (einspeisung - bezug + car_w + (bat_lade if soc >= prio_soc else 0)) | float(0) }}"
-      is_charging: "{{ states('select.goe_081320_frc') == '2' }}"
-  - choose:
     - conditions:
       - condition: template
-        value_template: "{{ surplus >= 4200 }}"
+        value_template: '{{ surplus >= 4200 }}'
       sequence:
       - action: select.select_option
         target:
@@ -1783,7 +1914,7 @@
         target:
           entity_id: number.goe_081320_amp
         data:
-          value: "{{ [16, [6, (surplus / 690) | int] | max] | min }}"
+          value: '{{ [16, [6, (surplus / 690) | int] | max] | min }}'
       - action: select.select_option
         target:
           entity_id: select.goe_081320_frc
@@ -1791,7 +1922,7 @@
           option: '2'
     - conditions:
       - condition: template
-        value_template: "{{ surplus >= 1380 or (is_charging and surplus >= 1100) }}"
+        value_template: '{{ surplus >= 1380 or (is_charging and surplus >= 1100) }}'
       sequence:
       - action: select.select_option
         target:
@@ -1802,7 +1933,7 @@
         target:
           entity_id: number.goe_081320_amp
         data:
-          value: "{{ [16, [6, (surplus / 230) | int] | max] | min }}"
+          value: '{{ [16, [6, (surplus / 230) | int] | max] | min }}'
       - action: select.select_option
         target:
           entity_id: select.goe_081320_frc
@@ -1810,7 +1941,8 @@
           option: '2'
     - conditions:
       - condition: template
-        value_template: "{{ modus == 'PV + Eco (Batterieschutz)' and soc > min_soc }}"
+        value_template: '{{ modus == ''PV + Eco (Batterieschutz)'' and soc > min_soc
+          }}'
       sequence:
       - action: select.select_option
         target:
@@ -1833,4 +1965,222 @@
         entity_id: select.goe_081320_frc
       data:
         option: '1'
+  mode: single
+- id: '202611160005'
+  alias: go-e KS Ladeziel Reset auf 80%
+  description: Setzt das Auto-Ladeziel beim Abstecken wieder auf 80% zurück
+  triggers:
+  - trigger: state
+    entity_id: binary_sensor.goe_337853_car_0
+    from: 'on'
+    to: 'off'
+  conditions:
+  - condition: numeric_state
+    entity_id: input_number.goe_ks_auto_ziel_soc
+    above: 80
+  actions:
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.goe_ks_auto_ziel_soc
+    data:
+      value: 80
+  mode: single
+- id: '202611160006'
+  alias: go-e GS Ladeziel Reset auf 80%
+  description: Setzt das Auto-Ladeziel beim Abstecken wieder auf 80% zurück
+  triggers:
+  - trigger: state
+    entity_id: binary_sensor.goe_081320_car_0
+    from: 'on'
+    to: 'off'
+  conditions:
+  - condition: numeric_state
+    entity_id: input_number.goe_gs_auto_ziel_soc
+    above: 80
+  actions:
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.goe_gs_auto_ziel_soc
+    data:
+      value: 80
+  mode: single
+- id: '202611160007'
+  alias: go-e KS KIA EV5 Benachrichtigungen
+  description: Push-Benachrichtigungen für KIA EV5
+  triggers:
+  - trigger: state
+    entity_id: binary_sensor.goe_337853_car_0
+    from: 'off'
+    to: 'on'
+    id: plugged
+  - trigger: state
+    entity_id: binary_sensor.goe_337853_car_0
+    from: 'on'
+    to: 'off'
+    id: unplugged
+  - trigger: state
+    entity_id: sensor.goe_337853_car_value
+    to: Laden
+    id: charging_start
+  - trigger: template
+    value_template: '{{ is_state(''binary_sensor.goe_337853_car_0'', ''on'') and (states(''input_number.goe_ks_auto_soc_dummy'')
+      | float(0)) >= (states(''input_number.goe_ks_auto_ziel_soc'') | float(80)) }}'
+    id: target_reached
+  conditions:
+  - condition: state
+    entity_id: input_boolean.goe_ks_notify
+    state: 'on'
+  actions:
+  - variables:
+      auto_soc: '{{ states(''input_number.goe_ks_auto_soc_dummy'') | int(0) }}'
+      auto_ziel: '{{ states(''input_number.goe_ks_auto_ziel_soc'') | int(80) }}'
+      modus: '{{ states(''input_select.goe_ks_lademodus'') }}'
+      fc: '{{ states(''sensor.energy_production_tomorrow_2'') | float(0) | round(1)
+        }}'
+      kwh: '{{ states(''sensor.goe_337853_wh'') | float(0) | round(1) }}'
+      power_kw: '{{ (states(''sensor.goe_337853_nrg_11'') | float(0) / 1000) | round(1)
+        }}'
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: plugged
+      sequence:
+      - action: notify.mobile_app_karl_s_s26
+        data:
+          title: KIA EV5 angesteckt
+          message: 'Akku: {{ auto_soc }} % (Ziel: {{ auto_ziel }} %) · Modus: {{ modus
+            }} · PV-Forecast morgen: {{ fc }} kWh'
+    - conditions:
+      - condition: trigger
+        id: charging_start
+      sequence:
+      - action: notify.mobile_app_karl_s_s26
+        data:
+          title: KIA EV5 lädt
+          message: 'Ladung gestartet ({{ power_kw }} kW) · Akku: {{ auto_soc }} %
+            → {{ auto_ziel }} % · Modus: {{ modus }}'
+    - conditions:
+      - condition: trigger
+        id: target_reached
+      sequence:
+      - action: notify.mobile_app_karl_s_s26
+        data:
+          title: 'KIA EV5: Ladeziel erreicht'
+          message: 'Akku bei {{ auto_soc }} % (Ziel {{ auto_ziel }} %) · Geladen:
+            {{ kwh }} kWh. Wallbox pausiert.'
+    - conditions:
+      - condition: trigger
+        id: unplugged
+      sequence:
+      - action: notify.mobile_app_karl_s_s26
+        data:
+          title: KIA EV5 abgesteckt
+          message: 'Session beendet · Geladen: {{ kwh }} kWh · Aktueller Akku: {{
+            auto_soc }} %'
+  mode: queued
+- id: '202611160008'
+  alias: go-e GS KIA Niro Benachrichtigungen (Helmuth)
+  description: Push-Benachrichtigungen für KIA e-Niro
+  triggers:
+  - trigger: state
+    entity_id: binary_sensor.goe_081320_car_0
+    from: 'off'
+    to: 'on'
+    id: plugged
+  - trigger: state
+    entity_id: binary_sensor.goe_081320_car_0
+    from: 'on'
+    to: 'off'
+    id: unplugged
+  - trigger: state
+    entity_id: sensor.goe_081320_car_value
+    to: Laden
+    id: charging_start
+  - trigger: template
+    value_template: '{{ is_state(''binary_sensor.goe_081320_car_0'', ''on'') and (states(''input_number.goe_gs_auto_soc_dummy'')
+      | float(0)) >= (states(''input_number.goe_gs_auto_ziel_soc'') | float(80)) }}'
+    id: target_reached
+  conditions:
+  - condition: state
+    entity_id: input_boolean.goe_gs_notify
+    state: 'on'
+  actions:
+  - variables:
+      auto_soc: '{{ states(''input_number.goe_gs_auto_soc_dummy'') | int(0) }}'
+      auto_ziel: '{{ states(''input_number.goe_gs_auto_ziel_soc'') | int(80) }}'
+      modus: '{{ states(''input_select.goe_gs_lademodus'') }}'
+      fc: '{{ states(''sensor.energy_production_tomorrow_2'') | float(0) | round(1)
+        }}'
+      kwh: '{{ states(''sensor.goe_081320_wh'') | float(0) | round(1) }}'
+      power_kw: '{{ (states(''sensor.goe_081320_nrg_11'') | float(0) / 1000) | round(1)
+        }}'
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: plugged
+      sequence:
+      - action: notify.mobile_app_sm_helmuth
+        data:
+          title: KIA e-Niro angesteckt
+          message: 'Akku: {{ auto_soc }} % (Ziel: {{ auto_ziel }} %) · Modus: {{ modus
+            }} · PV-Forecast morgen: {{ fc }} kWh'
+    - conditions:
+      - condition: trigger
+        id: charging_start
+      sequence:
+      - action: notify.mobile_app_sm_helmuth
+        data:
+          title: KIA e-Niro lädt
+          message: 'Ladung gestartet ({{ power_kw }} kW) · Akku: {{ auto_soc }} %
+            → {{ auto_ziel }} % · Modus: {{ modus }}'
+    - conditions:
+      - condition: trigger
+        id: target_reached
+      sequence:
+      - action: notify.mobile_app_sm_helmuth
+        data:
+          title: 'KIA e-Niro: Ladeziel erreicht'
+          message: 'Akku bei {{ auto_soc }} % (Ziel {{ auto_ziel }} %) · Geladen:
+            {{ kwh }} kWh. Wallbox pausiert.'
+    - conditions:
+      - condition: trigger
+        id: unplugged
+      sequence:
+      - action: notify.mobile_app_sm_helmuth
+        data:
+          title: KIA e-Niro abgesteckt
+          message: 'Session beendet · Geladen: {{ kwh }} kWh · Aktueller Akku: {{
+            auto_soc }} %'
+  mode: queued
+- id: '202611160009'
+  alias: go-e Wintermodus Automatik (Nov-Feb / Forecast)
+  description: Aktiviert Wintermodus automatisch Nov-Feb bei niedrigem PV-Forecast
+    und deaktiviert ihn ab März bei gutem Forecast
+  triggers:
+  - trigger: time
+    at: 06:00:00
+  conditions: []
+  actions:
+  - variables:
+      is_winter_months: '{{ now().month in [11, 12, 1, 2] }}'
+      fc: '{{ states(''sensor.energy_production_tomorrow_2'') | float(0) }}'
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ is_winter_months and fc < 15 }}'
+      sequence:
+      - action: input_boolean.turn_on
+        target:
+          entity_id:
+          - input_boolean.goe_ks_wintermodus
+          - input_boolean.goe_gs_wintermodus
+    - conditions:
+      - condition: template
+        value_template: '{{ (not is_winter_months) and fc >= 15 }}'
+      sequence:
+      - action: input_boolean.turn_off
+        target:
+          entity_id:
+          - input_boolean.goe_ks_wintermodus
+          - input_boolean.goe_gs_wintermodus
   mode: single
