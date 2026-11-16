@@ -1568,3 +1568,22 @@
     entity_id: 53c36f79ea3e90a305dd27044ae92d3e
     domain: switch
   mode: single
+- id: 'onleihe_neue_buecher'
+  alias: "Onleihe: Neue Bücher benachrichtigen"
+  description: "Empfängt neue Onleihe-Titel vom Pi-Skript und sendet eine Push-Nachricht."
+  triggers:
+  - trigger: webhook
+    webhook_id: onleihe_neue_buecher
+    allowed_methods:
+    - POST
+    local_only: true
+  conditions: []
+  actions:
+  - action: notify.mobile_app_karl_s_s26
+    data:
+      title: "{{ trigger.json.title }}"
+      message: "{{ trigger.json.message }}"
+      data:
+        url: "{{ trigger.json.url }}"
+        clickAction: "{{ trigger.json.url }}"
+  mode: queued
