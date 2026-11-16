@@ -5,8 +5,6 @@ default_config:
 # Load frontend themes from the themes folder
 frontend:
   themes: !include_dir_merge_named themes
-  extra_module_url:
-    - /hacsfiles/lovelace-card-mod/card-mod.js?hacstag=190927524400
 
 automation: !include automations.yaml
 script: !include scripts.yaml
@@ -236,3 +234,53 @@ input_number:
     mode: box
     unit_of_measurement: "l"
     icon: "mdi:water"
+
+  goe_ks_min_soc:
+    name: "go-e KS Min-SOC Speicher"
+    min: 0
+    max: 100
+    step: 5
+    mode: slider
+    unit_of_measurement: "%"
+    icon: mdi:battery-lock
+  goe_ks_bat_prio_soc:
+    name: "go-e KS Batterie-Priorität bis"
+    min: 0
+    max: 100
+    step: 5
+    mode: slider
+    unit_of_measurement: "%"
+    icon: mdi:battery-charging-high
+  goe_gs_min_soc:
+    name: "go-e GS Min-SOC Speicher"
+    min: 0
+    max: 100
+    step: 5
+    mode: slider
+    unit_of_measurement: "%"
+    icon: mdi:battery-lock
+  goe_gs_bat_prio_soc:
+    name: "go-e GS Batterie-Priorität bis"
+    min: 0
+    max: 100
+    step: 5
+    mode: slider
+    unit_of_measurement: "%"
+    icon: mdi:battery-charging-high
+input_select:
+  goe_ks_lademodus:
+    name: "go-e Klein Schoderleh Lademodus"
+    icon: mdi:ev-station
+    options:
+      - "Aus"
+      - "Sofort (Max)"
+      - "PV-Überschuss"
+      - "PV + Eco (Batterieschutz)"
+  goe_gs_lademodus:
+    name: "go-e Gut Schoderleh Lademodus"
+    icon: mdi:ev-station
+    options:
+      - "Aus"
+      - "Sofort (Max)"
+      - "PV-Überschuss"
+      - "PV + Eco (Batterieschutz)"
