@@ -103,19 +103,31 @@ def save_seen_ids(state_file: Path, seen_ids: set[str]) -> None:
 
 
 def format_notification(new_items: list[dict]) -> dict:
-    """Erstellt Titel und Nachrichtentext für die Home-Assistant-Benachrichtigung."""
+    """Erstellt Titel und kompakten Nachrichtentext für die Home-Assistant-Benachrichtigung."""
     count = len(new_items)
     title = (
         f"Onleihe: {count} neues Buch" if count == 1 else f"Onleihe: {count} neue Bücher"
     )
-    lines = []
+    counts: dict[str, int] = {}
     for item in new_items:
-        author_part = f" – {item['author']}" if item["author"] else ""
-        lines.append(f"• [{item['media_label']}] {item['title']}{author_part}")
+        label = item["media_label"]
+        counts[label] = counts.get(label, 0) + 1
+
+    parts = []
+    for label, n in counts.items():
+        if label == "E-Book":
+            parts.append(f"{n} E-Book" if n == 1 else f"{n} E-Books")
+        elif label == "Hörbuch":
+            parts.append(f"{n} Hörbuch" if n == 1 else f"{n} Hörbücher")
+        else:
+            parts.append(f"{n}× {label}")
+
+    summary = ", ".join(parts)
+    message = f"{summary} neu in der Onleihe verfügbar."
 
     return {
         "title": title,
-        "message": "\n".join(lines),
+        "message": message,
         "count": count,
         "url": CATALOG_URL,
         "items": new_items,

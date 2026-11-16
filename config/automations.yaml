@@ -1584,6 +1584,5 @@
       title: "{{ trigger.json.title }}"
       message: "{{ trigger.json.message }}"
       data:
-        url: "{{ trigger.json.url }}"
-        clickAction: "{{ trigger.json.url }}"
+        clickAction: "app://de.divibib.onleihe3"
   mode: queued
