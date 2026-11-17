@@ -146,6 +146,38 @@ sensor:
     value_template: "{{ value_json['state']['device']['channel'][1]['@lastdpactiontime']|int(0) | timestamp_custom('%d.%m.%Y  %X') }}"
     scan_interval: 60
 
+  - platform: integration
+    source: sensor.solarnet_gs_ladeleistung
+    name: "BYD Speicher GS Energie geladen"
+    unique_id: byd_speicher_gs_energie_geladen
+    unit_prefix: k
+    round: 2
+    method: left
+
+  - platform: integration
+    source: sensor.solarnet_gs_entladeleistung
+    name: "BYD Speicher GS Energie entladen"
+    unique_id: byd_speicher_gs_energie_entladen
+    unit_prefix: k
+    round: 2
+    method: left
+
+  - platform: integration
+    source: sensor.solarnet_ks_ladeleistung
+    name: "Reserva Speicher KS Energie geladen"
+    unique_id: reserva_speicher_ks_energie_geladen
+    unit_prefix: k
+    round: 2
+    method: left
+
+  - platform: integration
+    source: sensor.solarnet_ks_entladeleistung
+    name: "Reserva Speicher KS Energie entladen"
+    unique_id: reserva_speicher_ks_energie_entladen
+    unit_prefix: k
+    round: 2
+    method: left
+
 rest_command:
   schalterelektrozaunan:
     url: http://172.17.0.182/cm?cmnd=Power%20on
@@ -179,6 +211,54 @@ template:
           {% set bat_entlade = states('sensor.solarnet_gs_entladeleistung') | float(0) %}
           {% set bat_lade = states('sensor.solarnet_gs_ladeleistung') | float(0) %}
           {{ [0, (pv_tot + bezug - einspeisung + bat_entlade - bat_lade) | round(0)] | max }}
+
+      - name: "Schoderleh PV-Leistung Gesamt"
+        unique_id: schoderleh_pv_leistung_gesamt
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: >
+          {{ ((states('sensor.gut_schoderleh_pv_leistung_gesamt') | float(0)) + (states('sensor.solarnet_ks_pv_leistung') | float(0))) | round(0) }}
+
+      - name: "Schoderleh Gesamtverbrauch"
+        unique_id: schoderleh_gesamtverbrauch
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: >
+          {{ ((states('sensor.gut_schoderleh_gesamtverbrauch_echt') | float(0)) + (states('sensor.solarnet_ks_leistung_verbrauch') | float(0))) | round(0) }}
+
+      - name: "Schoderleh Netzbezug Gesamt"
+        unique_id: schoderleh_netzbezug_gesamt
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: >
+          {{ ((states('sensor.solarnet_gs_leistung_netzbezug') | float(0)) + (states('sensor.solarnet_ks_leistung_netzbezug') | float(0))) | round(0) }}
+
+      - name: "Schoderleh Netzeinspeisung Gesamt"
+        unique_id: schoderleh_netzeinspeisung_gesamt
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: >
+          {{ ((states('sensor.solarnet_gs_leistung_netzeinspeisung') | float(0)) + (states('sensor.solarnet_ks_leistung_netzeinspeisung') | float(0))) | round(0) }}
+
+      - name: "Schoderleh Speicher Ladeleistung Gesamt"
+        unique_id: schoderleh_speicher_ladeleistung_gesamt
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: >
+          {{ ((states('sensor.solarnet_gs_ladeleistung') | float(0)) + (states('sensor.solarnet_ks_ladeleistung') | float(0))) | round(0) }}
+
+      - name: "Schoderleh Speicher Entladeleistung Gesamt"
+        unique_id: schoderleh_speicher_entladeleistung_gesamt
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: >
+          {{ ((states('sensor.solarnet_gs_entladeleistung') | float(0)) + (states('sensor.solarnet_ks_entladeleistung') | float(0))) | round(0) }}
 
   - trigger:
       - trigger: state
