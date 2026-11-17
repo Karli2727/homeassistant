@@ -155,6 +155,29 @@ rest_command:
     method: POST
 
 template:
+  - sensor:
+      - name: "Gut Schoderleh PV-Leistung Gesamt"
+        unique_id: gut_schoderleh_pv_leistung_gesamt
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: >
+          {% set p_gen24 = states('sensor.solarnet_gs_pv_leistung') | float(0) %}
+          {% set p_symo1 = states('sensor.symo_15_0_3_m_1_leistung_ac') | float(0) %}
+          {% set p_symo2 = states('sensor.symo_15_0_3_m_2_leistung_ac') | float(0) %}
+          {{ (p_gen24 + p_symo1 + p_symo2) | round(0) }}
+
+      - name: "Gut Schoderleh Gesamtverbrauch Echt"
+        unique_id: gut_schoderleh_gesamtverbrauch_echt
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: >
+          {% set pv_tot = states('sensor.gut_schoderleh_pv_leistung_gesamt') | float(0) %}
+          {% set grid = states('sensor.solarnet_gs_leistung_vom_netz_2') | float(0) %}
+          {% set bat = states('sensor.solarnet_gs_leistung_speicher_2') | float(0) %}
+          {{ (pv_tot + grid + bat) | round(0) }}
+
   - trigger:
       - trigger: state
         entity_id: input_boolean.pumpe_1_aus_helfer
