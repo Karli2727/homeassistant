@@ -199,6 +199,20 @@ template:
           {% set p_symo2 = states('sensor.symo_15_0_3_m_2_leistung_ac') | float(0) %}
           {{ (p_gen24 + p_symo1 + p_symo2) | round(0) }}
 
+      - name: "Gut Schoderleh PV Teil 1 Leistung"
+        unique_id: gut_schoderleh_pv_teil_1_leistung
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: "{{ states('sensor.symo_15_0_3_m_1_leistung_ac') | float(0) | round(0) }}"
+
+      - name: "Gut Schoderleh PV Teil 2 Leistung"
+        unique_id: gut_schoderleh_pv_teil_2_leistung
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: "{{ states('sensor.symo_15_0_3_m_2_leistung_ac') | float(0) | round(0) }}"
+
       - name: "Gut Schoderleh Gesamtverbrauch Echt"
         unique_id: gut_schoderleh_gesamtverbrauch_echt
         unit_of_measurement: "W"
