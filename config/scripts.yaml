@@ -207,3 +207,45 @@ rf_bridge_test_tasmota_send:
     target:
       entity_id: button.rf_bridge_rfkey_1
   mode: single
+ev5_smart_klima_starten:
+  alias: EV5 Smarte Vorklimatisierung starten
+  icon: mdi:car-defrost-front
+  mode: single
+  sequence:
+  - variables:
+      ws: '{{ states(''sensor.wettersensor_temperature'') }}'
+      temp: '{{ ws | float if ws not in [''unknown'', ''unavailable'', ''none''] else
+        (state_attr(''weather.forecast_home'', ''temperature'') | float(10)) }}'
+      target_temp: '{{ 22.0 if temp < 4 else (21.5 if temp < 18 else (20.5 if temp
+        < 23 else 19.5)) }}'
+      use_defrost: '{{ temp < 4 }}'
+      use_heating: '{{ ''1'' if temp < 18 else ''0'' }}'
+  - action: kia_uvo.start_climate
+    data:
+      device_id: f551a60bb030d66d76443b526be88415
+      duration: 15
+      climate: true
+      temperature: '{{ target_temp }}'
+      defrost: '{{ use_defrost }}'
+      heating: '{{ use_heating }}'
+ev5_enteisen_starten:
+  alias: EV5 Enteisen & Vorheizen starten
+  icon: mdi:snowflake-melt
+  mode: single
+  sequence:
+  - action: kia_uvo.start_climate
+    data:
+      device_id: f551a60bb030d66d76443b526be88415
+      duration: 15
+      climate: true
+      temperature: 22
+      defrost: true
+      heating: '1'
+ev5_klima_stoppen:
+  alias: EV5 Vorklimatisierung stoppen
+  icon: mdi:fan-off
+  mode: single
+  sequence:
+  - action: kia_uvo.stop_climate
+    data:
+      device_id: f551a60bb030d66d76443b526be88415

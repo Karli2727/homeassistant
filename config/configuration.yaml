@@ -549,3 +549,7 @@ input_boolean:
     name: "go-e GS Benachrichtigungen (Niro / Helmuth)"
     initial: false
     icon: mdi:bell-off
+  ev5_smart_klima_morgens:
+    name: "EV5 Kindergarten-Vorklimatisierung (Mo–Fr 07:15)"
+    initial: true
+    icon: mdi:car-seat-heater

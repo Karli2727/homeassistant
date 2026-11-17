@@ -2391,3 +2391,42 @@
   - action: switch.turn_on
     target:
       entity_id: switch.licht_tischlampe_fernseher
+- id: '202611170003'
+  alias: EV5 Smarte Kindergarten-Vorklimatisierung (07:15)
+  description: Startet Mo-Fr um 07:15 Uhr automatisch Heizen/Enteisen (Winter) oder
+    Kühlen (Sommer) 15 Min vor Abfahrt um 07:30 Uhr.
+  mode: single
+  triggers:
+  - trigger: time
+    at: 07:15:00
+  conditions:
+  - condition: state
+    entity_id: input_boolean.ev5_smart_klima_morgens
+    state: 'on'
+  - condition: template
+    value_template: '{{ now().weekday() < 5 }}'
+  - condition: template
+    value_template: '{{ is_state(''device_tracker.ev5_ort'', ''home'') or is_state(''binary_sensor.goe_337853_car_0'',
+      ''on'') }}'
+  - condition: template
+    value_template: '{{ (states(''sensor.ev5_ladestand_ev_batterie'') | float(50))
+      >= 20 }}'
+  - condition: template
+    value_template: '{% set ws = states(''sensor.wettersensor_temperature'') %} {%
+      set t = ws | float if ws not in [''unknown'', ''unavailable'', ''none''] else
+      (state_attr(''weather.forecast_home'', ''temperature'') | float(10)) %} {{ t
+      < 17 or t >= 23 }}'
+  actions:
+  - action: script.ev5_smart_klima_starten
+  - variables:
+      ws: '{{ states(''sensor.wettersensor_temperature'') }}'
+      t: '{{ ws | float if ws not in [''unknown'', ''unavailable'', ''none''] else
+        (state_attr(''weather.forecast_home'', ''temperature'') | float(10)) }}'
+      mode_txt: '{{ ''❄️ Frost-Enteisung (22 °C)'' if t < 4 else (''🔥 Vorheizen (21,5 °C)''
+        if t < 17 else ''☀️ Sommer-Kühlen (19,5 °C)'') }}'
+  - action: notify.mobile_app_karl_s_s26
+    continue_on_error: true
+    data:
+      title: 🚗 EV5 Kindergarten-Klima aktiv
+      message: '{{ mode_txt }} bei {{ t | round(1) }} °C Außentemperatur für 15 Min
+        gestartet (Abfahrt 07:30).'
