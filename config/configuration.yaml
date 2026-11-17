@@ -174,9 +174,11 @@ template:
         state_class: measurement
         state: >
           {% set pv_tot = states('sensor.gut_schoderleh_pv_leistung_gesamt') | float(0) %}
-          {% set grid = states('sensor.solarnet_gs_leistung_vom_netz_2') | float(0) %}
-          {% set bat = states('sensor.solarnet_gs_leistung_speicher_2') | float(0) %}
-          {{ (pv_tot + grid + bat) | round(0) }}
+          {% set bezug = states('sensor.solarnet_gs_leistung_netzbezug') | float(0) %}
+          {% set einspeisung = states('sensor.solarnet_gs_leistung_netzeinspeisung') | float(0) %}
+          {% set bat_entlade = states('sensor.solarnet_gs_entladeleistung') | float(0) %}
+          {% set bat_lade = states('sensor.solarnet_gs_ladeleistung') | float(0) %}
+          {{ [0, (pv_tot + bezug - einspeisung + bat_entlade - bat_lade) | round(0)] | max }}
 
   - trigger:
       - trigger: state
