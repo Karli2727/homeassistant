@@ -49,5 +49,6 @@ Ausführliche technische Details zu allen Knoten, Subnetzen und Diensten siehe [
 
 ## 4. Dokumentation & Historie
 * [docs/NETWORK_INFRASTRUCTURE.md](file:///C:/Repos/homeassistant/docs/NETWORK_INFRASTRUCTURE.md) – Detaillierte Netzwerktopologie, IPs, Ports und Dienste
+* [docs/ATTERSEE_SETUP.md](file:///C:/Repos/homeassistant/docs/ATTERSEE_SETUP.md) – Attersee Infrastruktur, Backup-Stand & Vor-Ort Checkliste
 * [docs/CHAT_SESSION_TRANSFER.md](file:///C:/Repos/homeassistant/docs/CHAT_SESSION_TRANSFER.md) – Vollständiges Übergabeprotokoll aus der bisherigen Hauptsession
 * [docs/onleihe_watcher_chat_backup.md](file:///C:/Repos/homeassistant/docs/onleihe_watcher_chat_backup.md) – Onleihe-Watcher Projektstand
