@@ -186,6 +186,9 @@ rest_command:
     url: http://172.17.0.182/cm?cmnd=Power%20off
     method: POST
 
+shell_command:
+  fronius_ks_battery_charge: "python3 /config/scripts/fronius_eeg_battery.py --ip 172.17.0.146 --watts {{ watts | int(0) }}"
+
 template:
   - sensor:
       - name: "Gut Schoderleh PV-Leistung Gesamt"
@@ -322,6 +325,25 @@ template:
             Gedrosselt (max. {{ (avail_w / 1000) | round(1) }} kW frei)
           {% else %}
             Frei ({{ (bezug / 1000) | round(1) }} / {{ (max_w / 1000) | round(1) }} kW)
+          {% endif %}
+
+      - name: "EEG-Überschuss Status"
+        unique_id: eeg_ueberschuss_status
+        icon: "mdi:transmission-tower-import"
+        state: >
+          {% set active = is_state('input_boolean.eeg_ueberschuss_aktiv', 'on') %}
+          {% set hof_einsp = [0, (states('sensor.solarnet_gs_leistung_netzeinspeisung') | float(0)) - (states('sensor.solarnet_gs_leistung_netzbezug') | float(0))] | max %}
+          {% set ks_soc = states('sensor.reserva_ks_ladezustand') | float(0) %}
+          {% set bat_ziel = states('input_number.eeg_ks_batterie_ziel_soc') | float(90) %}
+          {% set bat_lade = states('sensor.solarnet_ks_ladeleistung') | float(0) %}
+          {% if not active %}
+            AUS (Wartet auf EEG-Freigabe – aktuell getrennte Zähler)
+          {% elif hof_einsp >= 600 and ks_soc < bat_ziel and bat_lade > 300 %}
+            Aktiv: Speicher KS lädt ({{ (bat_lade / 1000) | round(2) }} kW · Hof liefert {{ (hof_einsp / 1000) | round(2) }} kW)
+          {% elif hof_einsp >= 600 %}
+            Aktiv: {{ (hof_einsp / 1000) | round(2) }} kW Hof-Überschuss verfügbar
+          {% else %}
+            Bereit (Kein Hof-Überschuss · {{ (hof_einsp / 1000) | round(2) }} kW)
           {% endif %}
 
   - trigger:
@@ -526,6 +548,15 @@ input_number:
     mode: box
     unit_of_measurement: "kW"
     icon: mdi:shield-flash
+  eeg_ks_batterie_ziel_soc:
+    name: "EEG Batteriespeicher KS Ladeziel"
+    min: 50
+    max: 100
+    step: 5
+    initial: 90
+    mode: box
+    unit_of_measurement: "%"
+    icon: mdi:battery-charging-90
 input_select:
   goe_ks_lademodus:
     name: "go-e Klein Schoderleh Lademodus"
@@ -567,3 +598,6 @@ input_boolean:
     name: "EV5 Kindergarten-Vorklimatisierung (Mo–Fr 07:15)"
     initial: true
     icon: mdi:car-seat-heater
+  eeg_ueberschuss_aktiv:
+    name: "EEG-Überschuss-Kopplung aktiv (Hof → Klein Schoderleh)"
+    icon: mdi:transmission-tower-import

@@ -1570,7 +1570,7 @@
   mode: queued
 - id: '202611160001'
   alias: go-e KS Modus-Umschaltung
-  description: Reagiert sofort auf Aus oder Sofort (Max) für go-e Klein Schoderleh
+  description: Reagiert sofort auf Moduswechsel für go-e Klein Schoderleh (inkl. Hardware-Fallback lmo=4)
   triggers:
   - trigger: state
     entity_id: input_select.goe_ks_lademodus
@@ -1584,6 +1584,11 @@
       sequence:
       - action: select.select_option
         target:
+          entity_id: select.goe_337853_lmo
+        data:
+          option: '3'
+      - action: select.select_option
+        target:
           entity_id: select.goe_337853_psm
         data:
           option: '0'
@@ -1604,6 +1609,11 @@
       sequence:
       - action: select.select_option
         target:
+          entity_id: select.goe_337853_lmo
+        data:
+          option: '4'
+      - action: select.select_option
+        target:
           entity_id: select.goe_337853_frc
         data:
           option: '1'
@@ -1612,6 +1622,11 @@
         entity_id: input_select.goe_ks_lademodus
         state: Sofort (Max)
       sequence:
+      - action: select.select_option
+        target:
+          entity_id: select.goe_337853_lmo
+        data:
+          option: '4'
       - action: select.select_option
         target:
           entity_id: select.goe_337853_psm
@@ -1627,10 +1642,16 @@
           entity_id: select.goe_337853_frc
         data:
           option: '2'
+    default:
+    - action: select.select_option
+      target:
+        entity_id: select.goe_337853_lmo
+      data:
+        option: '4'
   mode: restart
 - id: '202611160003'
   alias: go-e GS Modus-Umschaltung
-  description: Reagiert sofort auf Aus oder Sofort (Max) für go-e Gut Schoderleh
+  description: Reagiert sofort auf Moduswechsel für go-e Gut Schoderleh (inkl. Hardware-Fallback lmo=4)
   triggers:
   - trigger: state
     entity_id: input_select.goe_gs_lademodus
@@ -1644,6 +1665,11 @@
       sequence:
       - action: select.select_option
         target:
+          entity_id: select.goe_081320_lmo
+        data:
+          option: '3'
+      - action: select.select_option
+        target:
           entity_id: select.goe_081320_psm
         data:
           option: '0'
@@ -1664,6 +1690,11 @@
       sequence:
       - action: select.select_option
         target:
+          entity_id: select.goe_081320_lmo
+        data:
+          option: '4'
+      - action: select.select_option
+        target:
           entity_id: select.goe_081320_frc
         data:
           option: '1'
@@ -1672,6 +1703,11 @@
         entity_id: input_select.goe_gs_lademodus
         state: Sofort (Max)
       sequence:
+      - action: select.select_option
+        target:
+          entity_id: select.goe_081320_lmo
+        data:
+          option: '4'
       - action: select.select_option
         target:
           entity_id: select.goe_081320_psm
@@ -1687,6 +1723,12 @@
           entity_id: select.goe_081320_frc
         data:
           option: '2'
+    default:
+    - action: select.select_option
+      target:
+        entity_id: select.goe_081320_lmo
+      data:
+        option: '4'
   mode: restart
 - id: '202611160002'
   alias: go-e KS PV-Überschuss & Smart Regelung
@@ -1711,7 +1753,10 @@
         | float(50)) }}'
       auto_ziel: '{{ states(''input_number.goe_ks_auto_ziel_soc'') | float(80) }}'
       auto_min: '{{ states(''input_number.goe_ks_auto_min_soc'') | float(30) }}'
-      fc_morgen: '{{ states(''sensor.pv_prognose_morgen_klein_schoderleh'') | float(0) }}'
+      eeg_aktiv: '{{ is_state(''input_boolean.eeg_ueberschuss_aktiv'', ''on'') }}'
+      fc_morgen: '{{ (states(''sensor.pv_prognose_morgen_klein_schoderleh'') | float(0))
+        + ((states(''sensor.pv_prognose_morgen_gut_schoderleh'') | float(0)) if eeg_aktiv
+        else 0) }}'
       fc_schwelle: '{{ states(''input_number.goe_ks_forecast_schwelle'') | float(15)
         }}'
       is_night: '{{ now().hour >= 20 or now().hour < 6 }}'
@@ -1720,12 +1765,16 @@
       bezug: '{{ states(''sensor.solarnet_ks_leistung_netzbezug'') | float(0) }}'
       bat_lade: '{{ states(''sensor.solarnet_ks_ladeleistung'') | float(0) }}'
       car_w: '{{ states(''sensor.goe_337853_nrg_11'') | float(0) }}'
+      gs_einspeisung: '{{ states(''sensor.solarnet_gs_leistung_netzeinspeisung'') | float(0)
+        }}'
+      gs_bezug: '{{ states(''sensor.solarnet_gs_leistung_netzbezug'') | float(0) }}'
+      hof_surplus: '{{ [0, gs_einspeisung - gs_bezug] | max if eeg_aktiv else 0 }}'
       max_grid_w: '{{ (states(''input_number.goe_ks_max_netzbezug_kw'') | float(11)) * 1000
         }}'
       net_grid_without_car: '{{ (bezug - einspeisung - car_w) | float(0) }}'
       max_car_total_w: '{{ [0, (max_grid_w - net_grid_without_car) | round(0)] | max }}'
-      surplus: '{{ (einspeisung - bezug + car_w + (bat_lade if soc >= prio_soc else
-        0)) | float(0) }}'
+      surplus: '{{ (einspeisung + hof_surplus - bezug + car_w + (bat_lade if soc >=
+        prio_soc else 0)) | float(0) }}'
       eff_pv_w: '{{ [surplus, max_car_total_w] | min }}'
       is_charging: '{{ states(''select.goe_337853_frc'') == ''2'' }}'
   - choose:
@@ -2430,3 +2479,120 @@
       title: 🚗 EV5 Kindergarten-Klima aktiv
       message: '{{ mode_txt }} bei {{ t | round(1) }} °C Außentemperatur für 15 Min
         gestartet (Abfahrt 07:30).'
+- id: '202611180001'
+  alias: EEG Batteriespeicher Klein Schoderleh mit Hof-Überschuss laden
+  description: Lädt bei aktivierter EEG-Kopplung überschüssigen Hof-Strom (Gut Schoderleh)
+    per Fronius Modbus TCP in den Reserva Batteriespeicher Klein Schoderleh.
+  mode: single
+  triggers:
+  - trigger: time_pattern
+    seconds: /30
+  - trigger: state
+    entity_id: input_boolean.eeg_ueberschuss_aktiv
+    to: 'off'
+    id: turned_off
+  - trigger: homeassistant
+    event: start
+    id: ha_start
+  actions:
+  - variables:
+      eeg_aktiv: '{{ is_state(''input_boolean.eeg_ueberschuss_aktiv'', ''on'') }}'
+      gs_einspeisung: '{{ states(''sensor.solarnet_gs_leistung_netzeinspeisung'') | float(0)
+        }}'
+      gs_bezug: '{{ states(''sensor.solarnet_gs_leistung_netzbezug'') | float(0) }}'
+      hof_surplus: '{{ [0, gs_einspeisung - gs_bezug] | max }}'
+      ks_pv: '{{ states(''sensor.solarnet_ks_pv_leistung'') | float(0) }}'
+      ks_verbrauch: '{{ states(''sensor.solarnet_ks_leistung_verbrauch'') | float(0)
+        }}'
+      car_w: '{{ states(''sensor.goe_337853_nrg_11'') | float(0) }}'
+      ks_soc: '{{ states(''sensor.reserva_ks_ladezustand'') | float(0) }}'
+      prio_soc: '{{ states(''input_number.goe_ks_bat_prio_soc'') | float(50) }}'
+      bat_ziel_soc: '{{ states(''input_number.eeg_ks_batterie_ziel_soc'') | float(90)
+        }}'
+      car_plugged: '{{ is_state(''binary_sensor.goe_337853_car_0'', ''on'') }}'
+      car_waiting_pv: '{{ car_plugged and (states(''input_select.goe_ks_lademodus'')
+        in [''Smart (Auto-Prio)'', ''PV-Überschuss'']) and ((states(''sensor.ev5_ladestand_ev_batterie'')
+        | float(50)) < (states(''input_number.goe_ks_auto_ziel_soc'') | float(80))) }}'
+      eff_bat_ziel: '{{ prio_soc if car_waiting_pv else bat_ziel_soc }}'
+      house_no_car: '{{ [0, ks_verbrauch - car_w] | max }}'
+      local_pv_excess: '{{ [0, ks_pv - house_no_car] | max }}'
+      house_grid_need: '{{ [0, house_no_car - ks_pv] | max }}'
+      eeg_for_bat: '{{ [0, hof_surplus - house_grid_need] | max }}'
+      max_grid_w: '{{ (states(''input_number.goe_ks_max_netzbezug_kw'') | float(11)) * 1000
+        }}'
+      grid_headroom: '{{ [0, max_grid_w - house_grid_need - car_w] | max }}'
+      allowed_eeg_bat: '{{ [eeg_for_bat, grid_headroom] | min }}'
+      target_bat_w: '{{ [4800, (local_pv_excess + allowed_eeg_bat) | round(0)] | min }}'
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.id in [''turned_off'', ''ha_start''] and not eeg_aktiv }}'
+      sequence:
+      - action: shell_command.fronius_ks_battery_charge
+        data:
+          watts: 0
+    - conditions:
+      - condition: template
+        value_template: '{{ eeg_aktiv and ks_soc < eff_bat_ziel and allowed_eeg_bat
+          >= 600 and target_bat_w >= 600 }}'
+      sequence:
+      - action: shell_command.fronius_ks_battery_charge
+        data:
+          watts: '{{ target_bat_w | int }}'
+    - conditions:
+      - condition: template
+        value_template: '{{ eeg_aktiv and (ks_soc >= eff_bat_ziel or allowed_eeg_bat
+          < 400) }}'
+      sequence:
+      - action: shell_command.fronius_ks_battery_charge
+        data:
+          watts: 0
+- id: '202611180002'
+  alias: KIA AC-Ladelimit Hardware-Fallback Synchronisation
+  description: Synchronisiert das Dashboard-Ladeziel mit dem fahrzeuginternen Kia-BMS AC-Ladelimit (50–100 %, 10er-Schritte) als Hardware-Abschaltschutz bei Pi-Ausfall.
+  mode: queued
+  triggers:
+  - trigger: state
+    entity_id: input_number.goe_ks_auto_ziel_soc
+    for:
+      seconds: 5
+    id: ks
+  - trigger: state
+    entity_id: input_number.goe_gs_auto_ziel_soc
+    for:
+      seconds: 5
+    id: gs
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: ks
+      sequence:
+      - variables:
+          target_limit: '{{ [50, [100, ((states(''input_number.goe_ks_auto_ziel_soc'') | float(80) / 10) | round(0) * 10) | int] | min] | max }}'
+      - if:
+        - condition: template
+          value_template: '{{ states(''number.ev5_ac_ladelimit'') not in [''unknown'', ''unavailable''] and (states(''number.ev5_ac_ladelimit'') | int(80)) != (target_limit | int) }}'
+        then:
+        - action: number.set_value
+          continue_on_error: true
+          target:
+            entity_id: number.ev5_ac_ladelimit
+          data:
+            value: '{{ target_limit | int }}'
+    - conditions:
+      - condition: trigger
+        id: gs
+      sequence:
+      - variables:
+          target_limit: '{{ [50, [100, ((states(''input_number.goe_gs_auto_ziel_soc'') | float(80) / 10) | round(0) * 10) | int] | min] | max }}'
+      - if:
+        - condition: template
+          value_template: '{{ states(''number.e_niro_ac_ladelimit'') not in [''unknown'', ''unavailable''] and (states(''number.e_niro_ac_ladelimit'') | int(80)) != (target_limit | int) }}'
+        then:
+        - action: number.set_value
+          continue_on_error: true
+          target:
+            entity_id: number.e_niro_ac_ladelimit
+          data:
+            value: '{{ target_limit | int }}'
