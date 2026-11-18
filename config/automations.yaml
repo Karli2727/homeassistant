@@ -2718,3 +2718,18 @@
               message: 'Trotz Aufweck-Befehl seit {{ ((as_timestamp(now()) - as_timestamp(states(''sensor.ev5_zuletzt_aktualisiert''), 0)) / 3600) | round(1) }} Std. kein Kontakt (letzter Stand: {{ states(''sensor.ev5_ladestand_ev_batterie'') }} %). Falls nicht im Funkloch: Im Auto kurz ‚Kia Connect → Neu konfigurieren‘ tippen.'
               data:
                 tag: ev5_modem_hang
+- id: '202611180004'
+  alias: Fronius KS Speicher Auto-Reload bei unavailable
+  description: Lädt die Fronius-Integration Klein Schoderleh neu, falls der Reserva-Speicher nach einem HA-Neustart auf unavailable hängen bleibt.
+  mode: single
+  triggers:
+  - trigger: state
+    entity_id: sensor.reserva_ks_ladezustand
+    to: unavailable
+    for:
+      minutes: 3
+  actions:
+  - action: homeassistant.reload_config_entry
+    continue_on_error: true
+    data:
+      entry_id: 01M7J9DTBD13Z3XBRKWAPDVX5V
