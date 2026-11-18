@@ -1927,7 +1927,8 @@
       modus: '{{ states(''input_select.goe_gs_lademodus'') }}'
       soc: '{{ states(''sensor.byd_battery_box_gs_ladezustand'') | float(0) }}'
       prio_soc: '{{ states(''input_number.goe_gs_bat_prio_soc'') | float(50) }}'
-      auto_soc: '{{ states(''input_number.goe_gs_auto_soc_dummy'') | float(50) }}'
+      auto_soc: '{{ states(''sensor.e_niro_ladestand_ev_batterie'') | float(states(''input_number.goe_gs_auto_soc_dummy'')
+        | float(50)) }}'
       auto_ziel: '{{ states(''input_number.goe_gs_auto_ziel_soc'') | float(80) }}'
       auto_min: '{{ states(''input_number.goe_gs_auto_min_soc'') | float(30) }}'
       fc_morgen: '{{ states(''sensor.pv_prognose_morgen_gut_schoderleh'') | float(0) }}'
@@ -2211,8 +2212,9 @@
     to: Laden
     id: charging_start
   - trigger: template
-    value_template: '{{ is_state(''binary_sensor.goe_081320_car_0'', ''on'') and (states(''input_number.goe_gs_auto_soc_dummy'')
-      | float(0)) >= (states(''input_number.goe_gs_auto_ziel_soc'') | float(80)) }}'
+    value_template: '{{ is_state(''binary_sensor.goe_081320_car_0'', ''on'') and (states(''sensor.e_niro_ladestand_ev_batterie'')
+      | float(states(''input_number.goe_gs_auto_soc_dummy'') | float(0))) >= (states(''input_number.goe_gs_auto_ziel_soc'')
+      | float(80)) }}'
     id: target_reached
   conditions:
   - condition: state
@@ -2220,7 +2222,8 @@
     state: 'on'
   actions:
   - variables:
-      auto_soc: '{{ states(''input_number.goe_gs_auto_soc_dummy'') | int(0) }}'
+      auto_soc: '{{ states(''sensor.e_niro_ladestand_ev_batterie'') | int(states(''input_number.goe_gs_auto_soc_dummy'')
+        | int(0)) }}'
       auto_ziel: '{{ states(''input_number.goe_gs_auto_ziel_soc'') | int(80) }}'
       modus: '{{ states(''input_select.goe_gs_lademodus'') }}'
       fc: '{{ states(''sensor.pv_prognose_morgen_gut_schoderleh'') | float(0) | round(1)
@@ -2596,3 +2599,91 @@
             entity_id: number.e_niro_ac_ladelimit
           data:
             value: '{{ target_limit | int }}'
+- id: '202611180003'
+  alias: KIA EV5 & e-Niro Intelligenter Live-SoC Refresh
+  description: Erzwingt ein Live-Update über Mobilfunk beim Anstecken, alle 15 Min während aktiver Ladung sowie zu fixen Tageszeiten bei veraltetem Cloud-Stand.
+  mode: queued
+  triggers:
+  - trigger: state
+    entity_id: binary_sensor.goe_337853_car_0
+    from: 'off'
+    to: 'on'
+    for:
+      seconds: 10
+    id: ev5_plugged
+  - trigger: state
+    entity_id: binary_sensor.goe_081320_car_0
+    from: 'off'
+    to: 'on'
+    for:
+      seconds: 10
+    id: niro_plugged
+  - trigger: time_pattern
+    minutes: /15
+    id: charging_check
+  - trigger: time
+    at:
+    - '08:00:00'
+    - '13:00:00'
+    - '18:00:00'
+    id: daily_check
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: ev5_plugged
+      - condition: template
+        value_template: '{{ (as_timestamp(now()) - as_timestamp(states(''sensor.ev5_zuletzt_aktualisiert''), 0)) > 600 }}'
+      sequence:
+      - action: button.press
+        continue_on_error: true
+        target:
+          entity_id: button.ev5_aktualisierung_erzwingen
+    - conditions:
+      - condition: trigger
+        id: niro_plugged
+      - condition: template
+        value_template: '{{ (as_timestamp(now()) - as_timestamp(states(''sensor.e_niro_zuletzt_aktualisiert''), 0)) > 600 }}'
+      sequence:
+      - action: button.press
+        continue_on_error: true
+        target:
+          entity_id: button.e_niro_aktualisierung_erzwingen
+    - conditions:
+      - condition: trigger
+        id: charging_check
+      sequence:
+      - if:
+        - condition: state
+          entity_id: sensor.goe_337853_car_value
+          state: Laden
+        - condition: template
+          value_template: '{{ (as_timestamp(now()) - as_timestamp(states(''sensor.ev5_zuletzt_aktualisiert''), 0)) > 1500 }}'
+        then:
+        - action: button.press
+          continue_on_error: true
+          target:
+            entity_id: button.ev5_aktualisierung_erzwingen
+      - if:
+        - condition: state
+          entity_id: sensor.goe_081320_car_value
+          state: Laden
+        - condition: template
+          value_template: '{{ (as_timestamp(now()) - as_timestamp(states(''sensor.e_niro_zuletzt_aktualisiert''), 0)) > 1500 }}'
+        then:
+        - action: button.press
+          continue_on_error: true
+          target:
+            entity_id: button.e_niro_aktualisierung_erzwingen
+    - conditions:
+      - condition: trigger
+        id: daily_check
+      sequence:
+      - if:
+        - condition: template
+          value_template: '{{ (as_timestamp(now()) - as_timestamp(states(''sensor.ev5_zuletzt_aktualisiert''), 0)) > 14400 and (states(''sensor.ev5_ladestand_der_batterie'') | float(80)) >= 60 }}'
+        then:
+        - action: button.press
+          continue_on_error: true
+          target:
+            entity_id: button.ev5_aktualisierung_erzwingen
