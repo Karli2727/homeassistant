@@ -2639,6 +2639,12 @@
         continue_on_error: true
         target:
           entity_id: button.ev5_aktualisierung_erzwingen
+      - delay:
+          seconds: 35
+      - action: kia_uvo.update
+        continue_on_error: true
+        data:
+          device_id: f551a60bb030d66d76443b526be88415
     - conditions:
       - condition: trigger
         id: niro_plugged
@@ -2664,6 +2670,12 @@
           continue_on_error: true
           target:
             entity_id: button.ev5_aktualisierung_erzwingen
+        - delay:
+            seconds: 35
+        - action: kia_uvo.update
+          continue_on_error: true
+          data:
+            device_id: f551a60bb030d66d76443b526be88415
       - if:
         - condition: state
           entity_id: sensor.goe_081320_car_value
@@ -2687,3 +2699,22 @@
           continue_on_error: true
           target:
             entity_id: button.ev5_aktualisierung_erzwingen
+        - delay:
+            seconds: 35
+        - action: kia_uvo.update
+          continue_on_error: true
+          data:
+            device_id: f551a60bb030d66d76443b526be88415
+        - delay:
+            seconds: 10
+        - if:
+          - condition: template
+            value_template: '{{ (as_timestamp(now()) - as_timestamp(states(''sensor.ev5_zuletzt_aktualisiert''), 0)) > 28800 }}'
+          then:
+          - action: notify.mobile_app_karl_s_s26
+            continue_on_error: true
+            data:
+              title: '📡 KIA EV5: Modem reagiert nicht'
+              message: 'Trotz Aufweck-Befehl seit {{ ((as_timestamp(now()) - as_timestamp(states(''sensor.ev5_zuletzt_aktualisiert''), 0)) / 3600) | round(1) }} Std. kein Kontakt (letzter Stand: {{ states(''sensor.ev5_ladestand_ev_batterie'') }} %). Falls nicht im Funkloch: Im Auto kurz ‚Kia Connect → Neu konfigurieren‘ tippen.'
+              data:
+                tag: ev5_modem_hang
