@@ -22,10 +22,9 @@ Die eingebaute Telematik-Einheit (CCU / Mobilfunk-Modem, ccNC-System) verliert n
 | Nr. | Ausfallzeitraum (Lokalzeit MEZ) | Dauer ohne Kontakt | Eingefrorener Stand (App & Server) | Was tatsächlich passiert ist / Beleg | Behebung / Wiederanlauf |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **1** | **18.11.2026**<br>`08:07:38` → `20:23:39` | **12 Std. 16 Min.** | `73 %` SoC<br>`100,9 km` | Mehrere Fahrten im guten Mobilfunknetz (**+38,3 km** auf `139,2 km`, Verbrauch auf `61,5 %`). Remote-Parken vor Ort ging (BT), App & Server blieben auf `73 %`. Aktiver API-Weckruf (`GET /ccs2/carstatus`, `resCode: 0000`) blieb unbeantwortet. | Manuelles **„Kia Connect → Neu konfigurieren“** im Fahrzeug um `20:23 Uhr` → sofortige Meldung (`61,5 %`, `139,2 km`). |
-| **2** | **19.11.2026**<br>`12:08:26` → `18:00:08` | **5 Std. 51 Min.** | `47 %` SoC<br>`206,0 km` | Während dieses Zeitraums wurden **+22,4 km** gefahren (`206,0 km` → `228,4 km`, Akku sank von `47 %` auf `42 %`), ohne dass das Fahrzeug einen Status absetzte. | Erst ab `18:00:08 Uhr` (nach aktivem Weckruf) wieder online. |
-| **3** | **20.11.2026**<br>ab `02:32:35` → laufend (`12:42+`) | **> 10 Std.** *(laufend)* | `100 %` SoC<br>`260,6 km` | Während der Nachtladung bis `02:32 Uhr` alle 30 Min. gemeldet. Direkt nach Ladeende (`100 %`, 12V-Batterie `98 %`) erneut eingefroren. **Vormittags bereits gefahren**, App zeigt trotzdem weiterhin `100 %` von `02:32 Uhr`. | Steht noch aus (Reset / Werkstatt-Prüfung). |
+| **2** | **20.11.2026**<br>ab `02:32:35` → laufend (`12:42+`) | **> 10 Std.** *(laufend)* | `100 %` SoC<br>`260,6 km` | Während der Nachtladung bis `02:32 Uhr` alle 30 Min. gemeldet. Direkt nach Ladeende (`100 %`, 12V-Batterie `98 %`) erneut eingefroren. **Vormittags bereits gefahren**, App zeigt trotzdem weiterhin `100 %` von `02:32 Uhr`. | Steht noch aus (Reset / Werkstatt-Prüfung). |
 
-*(Hinweis am Rande: Am `19.11.2026` um `07:15:10 Uhr` schlug zusätzlich eine geplante Vorklimatisierung mit Timeout zum Kia-EU-Server `prd.eu-ccapi.kia.com:8080` fehl.)*
+*(Hinweis: Am `19.11.2026` zwischen `12:08` und `18:00 Uhr` gab es ebenfalls eine 5h51m-Lücke (`206,0 km` → `228,4 km`), dort stand das Fahrzeug jedoch regulär geparkt und meldete sich um `18:00 Uhr` selbstständig wieder – dies war daher kein bestätigter Modem-Absturz. Am `19.11.` um `07:15:10 Uhr` schlug zudem eine geplante Vorklimatisierung mit Timeout zum Kia-EU-Server `prd.eu-ccapi.kia.com:8080` fehl.)*
 
 ---
 
