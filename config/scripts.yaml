@@ -212,6 +212,32 @@ ev5_smart_klima_starten:
   icon: mdi:car-defrost-front
   mode: single
   sequence:
+  - if:
+    - condition: state
+      entity_id: lock.ev5_zentralverriegelung
+      state: unlocked
+    - condition: state
+      entity_id: binary_sensor.ev5_tur_vorne_links
+      state: 'off'
+    - condition: state
+      entity_id: binary_sensor.ev5_tur_vorne_rechts
+      state: 'off'
+    - condition: state
+      entity_id: binary_sensor.ev5_tur_hinten_links
+      state: 'off'
+    - condition: state
+      entity_id: binary_sensor.ev5_tur_hinten_rechts
+      state: 'off'
+    - condition: state
+      entity_id: binary_sensor.ev5_kofferraum
+      state: 'off'
+    then:
+    - action: lock.lock
+      continue_on_error: true
+      target:
+        entity_id: lock.ev5_zentralverriegelung
+    - delay:
+        seconds: 10
   - variables:
       ws: '{{ states(''sensor.wettersensor_temperature'') }}'
       temp: '{{ ws | float if ws not in [''unknown'', ''unavailable'', ''none''] else
@@ -228,11 +254,43 @@ ev5_smart_klima_starten:
       temperature: '{{ target_temp }}'
       defrost: '{{ use_defrost }}'
       heating: '{{ use_heating }}'
+  - delay:
+      seconds: 5
+  - action: kia_uvo.update
+    continue_on_error: true
+    data:
+      device_id: f551a60bb030d66d76443b526be88415
 ev5_enteisen_starten:
   alias: EV5 Enteisen & Vorheizen starten
   icon: mdi:snowflake-melt
   mode: single
   sequence:
+  - if:
+    - condition: state
+      entity_id: lock.ev5_zentralverriegelung
+      state: unlocked
+    - condition: state
+      entity_id: binary_sensor.ev5_tur_vorne_links
+      state: 'off'
+    - condition: state
+      entity_id: binary_sensor.ev5_tur_vorne_rechts
+      state: 'off'
+    - condition: state
+      entity_id: binary_sensor.ev5_tur_hinten_links
+      state: 'off'
+    - condition: state
+      entity_id: binary_sensor.ev5_tur_hinten_rechts
+      state: 'off'
+    - condition: state
+      entity_id: binary_sensor.ev5_kofferraum
+      state: 'off'
+    then:
+    - action: lock.lock
+      continue_on_error: true
+      target:
+        entity_id: lock.ev5_zentralverriegelung
+    - delay:
+        seconds: 10
   - action: kia_uvo.start_climate
     data:
       device_id: f551a60bb030d66d76443b526be88415
@@ -241,6 +299,12 @@ ev5_enteisen_starten:
       temperature: 22
       defrost: true
       heating: '1'
+  - delay:
+      seconds: 5
+  - action: kia_uvo.update
+    continue_on_error: true
+    data:
+      device_id: f551a60bb030d66d76443b526be88415
 ev5_klima_stoppen:
   alias: EV5 Vorklimatisierung stoppen
   icon: mdi:fan-off

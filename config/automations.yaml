@@ -2733,3 +2733,40 @@
     continue_on_error: true
     data:
       entry_id: 01M7J9DTBD13Z3XBRKWAPDVX5V
+- id: '202611230001'
+  alias: EV5 Automatisches Abend-Absperren (21:30)
+  description: Sperrt den KIA EV5 abends um 21:30 Uhr automatisch ab, falls er daheim unverschlossen und mit geschlossenen Türen parkt.
+  mode: single
+  triggers:
+  - trigger: time
+    at: '21:30:00'
+  conditions:
+  - condition: state
+    entity_id: device_tracker.ev5_ort
+    state: home
+  - condition: state
+    entity_id: binary_sensor.ev5_motor
+    state: 'off'
+  - condition: state
+    entity_id: lock.ev5_zentralverriegelung
+    state: unlocked
+  - condition: state
+    entity_id: binary_sensor.ev5_tur_vorne_links
+    state: 'off'
+  - condition: state
+    entity_id: binary_sensor.ev5_tur_vorne_rechts
+    state: 'off'
+  - condition: state
+    entity_id: binary_sensor.ev5_tur_hinten_links
+    state: 'off'
+  - condition: state
+    entity_id: binary_sensor.ev5_tur_hinten_rechts
+    state: 'off'
+  - condition: state
+    entity_id: binary_sensor.ev5_kofferraum
+    state: 'off'
+  actions:
+  - action: lock.lock
+    continue_on_error: true
+    target:
+      entity_id: lock.ev5_zentralverriegelung
