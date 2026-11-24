@@ -7,12 +7,18 @@ Stand: 16.11.2026, 13:45 Uhr
 ## 1. Systemübersicht & Netzwerk
 Ausführliche technische Details zu allen Knoten, Subnetzen und Diensten siehe [docs/NETWORK_INFRASTRUCTURE.md](file:///C:/Repos/homeassistant/docs/NETWORK_INFRASTRUCTURE.md).
 
-* **Klein-Schoderleh-Pi (`192.168.1.250`):**
+* **Klein-Schoderleh-Pi (`192.168.1.250` / `100.95.176.71`):**
   * OS: Raspberry Pi OS (User `pi`, SSH-Key `id_ed25519` / PW `raspberry`)
   * Home Assistant: Docker Container `homeassistant`, Config in `/home/pi/homeassistant`
   * Pi-Nexus MCP-Server: `/home/pi/mcp-server/server.py` (Port 8080 / via Cloudflare `https://mcp.karl-mai.at/mcp`)
   * Cloudflare Tunnel: `home.karl-mai.at` (Home Assistant Web-UI per SSL)
   * Fronius Wechselrichter: Live-Abfrage von `172.17.0.146` (Klein Schoderleh) und `172.17.0.147` (Reithalle)
+* **Attersee-Pi (`172.17.0.250` / `100.71.126.43`):**
+  * OS: Raspberry Pi OS (User `pi`, SSH-Key `id_ed25519`)
+  * Home Assistant: Docker Container in `/home/pi/home-assistant`
+  * Cloudflare Tunnel: `https://attersee.familie-mai.at` (systemd `cloudflared.service`)
+  * Automatisches Backup: Täglich 03:30 Uhr via `/home/pi/scripts/backup_ha.sh` mit Offsite-Sync per Tailscale nach Altlengbach (`/home/pi/backups/attersee/`)
+  * Pi-Nexus Monitoring: Voll integriert in `health_check.py` & `server.py` (Tailscale, Cloudflare Web-Status & Backup-Gültigkeit)
 * **Gut-Schoderleh-Pi (`172.17.0.154`):**
   * Mosquitto MQTT & Hof-Steuerung (SSH-Key `id_ed25519`)
 * **Synology NAS (`192.168.1.210`):**
