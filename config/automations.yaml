@@ -276,7 +276,7 @@
     metadata: {}
     data: {}
     target:
-      entity_id: switch.schalter_3d_drucker
+      entity_id: switch.shellyplugsg3_d885ac1fdc34
   mode: single
 - id: '1735829417151'
   alias: Technikraum 30min Auto off
@@ -2601,7 +2601,7 @@
             value: '{{ target_limit | int }}'
 - id: '202611180003'
   alias: KIA EV5 & e-Niro Intelligenter Live-SoC Refresh
-  description: Erzwingt ein Live-Update über Mobilfunk beim Anstecken, alle 15 Min während aktiver Ladung sowie zu fixen Tageszeiten bei veraltetem Cloud-Stand.
+  description: Erzwingt ein Live-Update über Mobilfunk nur schonend beim Anstecken (falls Stand > 2 Std. alt) und max. 1x täglich um 18:00 Uhr (falls EV5-Stand > 12 Std. alt). Kein Dauer-Polling während der Ladung.
   mode: queued
   triggers:
   - trigger: state
@@ -2618,14 +2618,8 @@
     for:
       seconds: 10
     id: niro_plugged
-  - trigger: time_pattern
-    minutes: /15
-    id: charging_check
   - trigger: time
-    at:
-    - '08:00:00'
-    - '13:00:00'
-    - '18:00:00'
+    at: '18:00:00'
     id: daily_check
   actions:
   - choose:
@@ -2633,23 +2627,17 @@
       - condition: trigger
         id: ev5_plugged
       - condition: template
-        value_template: '{{ (as_timestamp(now()) - as_timestamp(states(''sensor.ev5_zuletzt_aktualisiert''), 0)) > 600 }}'
+        value_template: '{{ states(''sensor.ev5_zuletzt_aktualisiert'') not in [''unknown'', ''unavailable'', ''none''] and (as_timestamp(now()) - as_timestamp(states(''sensor.ev5_zuletzt_aktualisiert''), 0)) > 7200 }}'
       sequence:
       - action: button.press
         continue_on_error: true
         target:
           entity_id: button.ev5_aktualisierung_erzwingen
-      - delay:
-          seconds: 35
-      - action: kia_uvo.update
-        continue_on_error: true
-        data:
-          device_id: f551a60bb030d66d76443b526be88415
     - conditions:
       - condition: trigger
         id: niro_plugged
       - condition: template
-        value_template: '{{ (as_timestamp(now()) - as_timestamp(states(''sensor.e_niro_zuletzt_aktualisiert''), 0)) > 600 }}'
+        value_template: '{{ states(''sensor.e_niro_zuletzt_aktualisiert'') not in [''unknown'', ''unavailable'', ''none''] and (as_timestamp(now()) - as_timestamp(states(''sensor.e_niro_zuletzt_aktualisiert''), 0)) > 7200 }}'
       sequence:
       - action: button.press
         continue_on_error: true
@@ -2657,59 +2645,21 @@
           entity_id: button.e_niro_aktualisierung_erzwingen
     - conditions:
       - condition: trigger
-        id: charging_check
-      sequence:
-      - if:
-        - condition: state
-          entity_id: sensor.goe_337853_car_value
-          state: Laden
-        - condition: template
-          value_template: '{{ (as_timestamp(now()) - as_timestamp(states(''sensor.ev5_zuletzt_aktualisiert''), 0)) > 1500 }}'
-        then:
-        - action: button.press
-          continue_on_error: true
-          target:
-            entity_id: button.ev5_aktualisierung_erzwingen
-        - delay:
-            seconds: 35
-        - action: kia_uvo.update
-          continue_on_error: true
-          data:
-            device_id: f551a60bb030d66d76443b526be88415
-      - if:
-        - condition: state
-          entity_id: sensor.goe_081320_car_value
-          state: Laden
-        - condition: template
-          value_template: '{{ (as_timestamp(now()) - as_timestamp(states(''sensor.e_niro_zuletzt_aktualisiert''), 0)) > 1500 }}'
-        then:
-        - action: button.press
-          continue_on_error: true
-          target:
-            entity_id: button.e_niro_aktualisierung_erzwingen
-    - conditions:
-      - condition: trigger
         id: daily_check
       sequence:
       - if:
         - condition: template
-          value_template: '{{ (as_timestamp(now()) - as_timestamp(states(''sensor.ev5_zuletzt_aktualisiert''), 0)) > 14400 and (states(''sensor.ev5_ladestand_der_batterie'') | float(80)) >= 60 }}'
+          value_template: '{{ states(''sensor.ev5_zuletzt_aktualisiert'') not in [''unknown'', ''unavailable'', ''none''] and (as_timestamp(now()) - as_timestamp(states(''sensor.ev5_zuletzt_aktualisiert''), 0)) > 43200 and (states(''sensor.ev5_ladestand_der_batterie'') | float(80)) >= 60 }}'
         then:
         - action: button.press
           continue_on_error: true
           target:
             entity_id: button.ev5_aktualisierung_erzwingen
         - delay:
-            seconds: 35
-        - action: kia_uvo.update
-          continue_on_error: true
-          data:
-            device_id: f551a60bb030d66d76443b526be88415
-        - delay:
-            seconds: 10
+            seconds: 45
         - if:
           - condition: template
-            value_template: '{{ (as_timestamp(now()) - as_timestamp(states(''sensor.ev5_zuletzt_aktualisiert''), 0)) > 28800 }}'
+            value_template: '{{ states(''sensor.ev5_zuletzt_aktualisiert'') not in [''unknown'', ''unavailable'', ''none''] and (as_timestamp(now()) - as_timestamp(states(''sensor.ev5_zuletzt_aktualisiert''), 0)) > 43200 }}'
           then:
           - action: notify.mobile_app_karl_s_s26
             continue_on_error: true
@@ -2733,6 +2683,43 @@
     continue_on_error: true
     data:
       entry_id: 01M7J9DTBD13Z3XBRKWAPDVX5V
+- id: '202611240001'
+  alias: KIA Connect Auto-Reload bei unavailable
+  description: Lädt die betroffene kia_uvo-Integration einmalig neu (mit 2 Std. Sperrfrist), falls EV5 oder e-Niro 30 Min. auf unavailable hängen (z. B. nach Kia-EU HTTP 502/500).
+  mode: single
+  triggers:
+  - trigger: state
+    entity_id: sensor.ev5_ladestand_ev_batterie
+    to: unavailable
+    for:
+      minutes: 30
+  - trigger: state
+    entity_id: sensor.e_niro_ladestand_ev_batterie
+    to: unavailable
+    for:
+      minutes: 30
+  conditions:
+  - condition: template
+    value_template: '{{ this.attributes.last_triggered is none or (now() - this.attributes.last_triggered).total_seconds() > 7200 }}'
+  actions:
+  - if:
+    - condition: state
+      entity_id: sensor.ev5_ladestand_ev_batterie
+      state: unavailable
+    then:
+    - action: homeassistant.reload_config_entry
+      continue_on_error: true
+      data:
+        entry_id: 01M7JCAN3Q90FRNA02AMABNQ2F
+  - if:
+    - condition: state
+      entity_id: sensor.e_niro_ladestand_ev_batterie
+      state: unavailable
+    then:
+    - action: homeassistant.reload_config_entry
+      continue_on_error: true
+      data:
+        entry_id: 01M7MENVS5STNPSA9CP1RJD6C4
 - id: '202611230001'
   alias: EV5 Automatisches Abend-Absperren (21:30)
   description: Sperrt den KIA EV5 abends um 21:30 Uhr automatisch ab, falls er daheim unverschlossen und mit geschlossenen Türen parkt.
@@ -2770,3 +2757,27 @@
     continue_on_error: true
     target:
       entity_id: lock.ev5_zentralverriegelung
+- id: '1795534600000'
+  alias: 3D Drucker Idle-Heiz-Schutz
+  description: Schaltet Shelly ab, wenn Hotend >150 Grad seit 15 min ohne aktiven Druck heizt
+  trigger:
+  - platform: numeric_state
+    entity_id:
+    - sensor.octoprint_actual_tool0_temp
+    above: 150
+    for:
+      hours: 0
+      minutes: 15
+      seconds: 0
+  condition:
+  - condition: state
+    entity_id: binary_sensor.octoprint_printing
+    state: 'off'
+  action:
+  - action: notify.mobile_app_karl_s_s22
+    data:
+      message: 3D Drucker heizt >150 °C seit 15 min ohne aktiven Druck – schalte ab!
+  - action: switch.turn_off
+    target:
+      entity_id: switch.shellyplugsg3_d885ac1fdc34
+  mode: single
