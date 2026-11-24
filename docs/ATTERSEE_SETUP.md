@@ -9,9 +9,9 @@ Stand: 24.11.2026
 * **Knoten – Raspberry Pi 4 (`pi-attersee`):**
   * Lokale IP: `172.17.0.250` (am TP-Link Omada Switch / Gateway)
   * Tailscale IP: `100.71.126.43` (Online, Direkte OpenSSH-Verbindung via Key)
-  * Cloudflare Tunnel: `https://attersee.familie-mai.at` (Aktiv, Status 200 OK via systemd `cloudflared.service`)
+  * Cloudflare Tunnel: `https://attersee.familie-mai.at` (Home Assistant Web-UI) & `https://omada-attersee.karl-mai.at` (Omada OC200 Controller Web-UI)
   * Home Assistant: Docker Container (Core 2024.10.4) in `/home/pi/home-assistant`
-  * Omada Controller & Mosquitto MQTT: Port 1883
+  * Omada Hardware Controller (OC200): IP `172.17.0.3` (Ports 443, 8043, 8088 aktiv)
   * Hardware: Sonoff Zigbee 3.0 USB Dongle (`/dev/ttyUSB0`)
 
 * **SSH-Authentifizierung:**
