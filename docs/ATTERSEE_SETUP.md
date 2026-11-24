@@ -46,3 +46,15 @@ Stand: 24.11.2026
 * **MCP Tools (`server.py`):**
   * `get_backup_status()`: Liefert Snapshots von Altlengbach und Offsite-Backups von Attersee.
   * `run_health_check()`: Umfasst alle Attersee-Komponenten.
+
+---
+
+## 4. Bare-Metal SD-Klon (rpi-clone)
+
+* **Hardware:** SanDisk MobileMate USB 3.0 Reader (`/dev/sda`) mit 64 GB MicroSD (58.9 GB).
+* **Quell-Laufwerk:** 128 GB MicroSD (`/dev/mmcblk0`), davon nach Bereinigung (Journal & Docker Prune) ca. 18.9 GB belegt.
+* **Tool:** `/usr/local/sbin/rpi-clone`.
+* **Cronjob (Root):** `@daily /usr/local/sbin/rpi-clone sda -q`.
+* **Initialisierung:** Automatische Partitionsanpassung via `rpi-clone sda -f -U` (256M FAT32 `/boot` + 58.7G ext4 `rootfs`).
+* **Ergebnis:** Tägliches bootfähiges 1:1 Abbild der SD-Karte direkt vor Ort für sofortigen Tausch bei SD-Kartenausfall.
+

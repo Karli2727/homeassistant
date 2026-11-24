@@ -18,6 +18,7 @@ Ausführliche technische Details zu allen Knoten, Subnetzen und Diensten siehe [
   * Home Assistant: Docker Container in `/home/pi/home-assistant`
   * Cloudflare Tunnel: `https://attersee.familie-mai.at` (systemd `cloudflared.service`)
   * Automatisches Backup: Täglich 03:30 Uhr via `/home/pi/scripts/backup_ha.sh` mit Offsite-Sync per Tailscale nach Altlengbach (`/home/pi/backups/attersee/`)
+  * Bare-Metal Klon: Täglich `@daily` via `rpi-clone` auf externe 64 GB MicroSD (`/dev/sda`)
   * Pi-Nexus Monitoring: Voll integriert in `health_check.py` & `server.py` (Tailscale, Cloudflare Web-Status & Backup-Gültigkeit)
 * **Gut-Schoderleh-Pi (`172.17.0.154`):**
   * Mosquitto MQTT & Hof-Steuerung (SSH-Key `id_ed25519`)
