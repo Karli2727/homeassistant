@@ -242,17 +242,17 @@
   - platform: state
     entity_id:
     - sensor.octoprint_current_state
-    from: Printing
-    to: Operational
+    from: printing
+    to: operational
     for:
       hours: 0
       minutes: 1
       seconds: 0
   condition: []
   action:
-  - action: notify.mobile_app_karl_s_s22
+  - action: notify.mobile_app_karl_s_s26
     data:
-      message: 3D Druck fertig, wird in 10 min abgeschaltet
+      message: 3D Druck fertig, wird in 15 min abgeschaltet (nach Timelapse-Upload)
   mode: single
 - id: '1734443818112'
   alias: Octoprint Turn OFF
@@ -261,15 +261,15 @@
   - platform: state
     entity_id:
     - sensor.octoprint_current_state
-    from: Printing
-    to: Operational
+    from: printing
+    to: operational
     for:
       hours: 0
-      minutes: 10
+      minutes: 15
       seconds: 0
   condition: []
   action:
-  - action: notify.mobile_app_karl_s_s22
+  - action: notify.mobile_app_karl_s_s26
     data:
       message: 3D Drucker abgeschaltet
   - action: switch.turn_off
@@ -328,7 +328,7 @@
       starting_threshold: 100
       finishing_threshold: 20
       actions:
-      - action: notify.mobile_app_karl_s_s22
+      - action: notify.mobile_app_karl_s_s26
         metadata: {}
         data:
           message: Waschmaschine Fertig
@@ -337,7 +337,7 @@
         data:
           message: Waschmaschine Fertig
       pre_actions:
-      - action: notify.mobile_app_karl_s_s22
+      - action: notify.mobile_app_karl_s_s26
         metadata: {}
         data:
           message: Waschmaschine An
@@ -354,7 +354,7 @@
       starting_threshold: 100
       finishing_threshold: 20
       actions:
-      - action: notify.mobile_app_karl_s_s22
+      - action: notify.mobile_app_karl_s_s26
         metadata: {}
         data:
           message: Trockner Fertig
@@ -363,7 +363,7 @@
         data:
           message: Trockner Fertig
       pre_actions:
-      - action: notify.mobile_app_karl_s_s22
+      - action: notify.mobile_app_karl_s_s26
         metadata: {}
         data:
           message: Trockner An
@@ -763,7 +763,7 @@
     - 'on'
   conditions: []
   actions:
-  - action: notify.mobile_app_karl_s_s22
+  - action: notify.mobile_app_karl_s_s26
     metadata: {}
     data:
       message: MAX Pumpe 1
@@ -782,7 +782,7 @@
     - 'on'
   conditions: []
   actions:
-  - action: notify.mobile_app_karl_s_s22
+  - action: notify.mobile_app_karl_s_s26
     metadata: {}
     data:
       message: MAX Pumpe 2
@@ -998,7 +998,7 @@
     value_template: '{{(states.sensor.positiver_fullstand_bereinigt.state) == (states.input_number.pumpen_automatik_max.state)}}'
   conditions: []
   actions:
-  - action: notify.mobile_app_karl_s_s22
+  - action: notify.mobile_app_karl_s_s26
     metadata: {}
     data:
       message: Füllstand 100%
@@ -1582,72 +1582,116 @@
         entity_id: input_select.goe_ks_lademodus
         state: Manuell (App / Frei)
       sequence:
-      - action: select.select_option
-        target:
-          entity_id: select.goe_337853_lmo
-        data:
-          option: '3'
-      - action: select.select_option
-        target:
-          entity_id: select.goe_337853_psm
-        data:
-          option: '0'
-      - action: number.set_value
-        target:
-          entity_id: number.goe_337853_amp
-        data:
-          value: 16
-      - action: select.select_option
-        target:
-          entity_id: select.goe_337853_frc
-        data:
-          option: '0'
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_337853_lmo'') != ''3'' }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_337853_lmo
+          data:
+            option: '3'
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_337853_psm'') != ''0'' }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_337853_psm
+          data:
+            option: '0'
+      - if:
+        - condition: template
+          value_template: '{{ (states(''number.goe_337853_amp'') | int(-1)) != 16 }}'
+        then:
+        - action: number.set_value
+          target:
+            entity_id: number.goe_337853_amp
+          data:
+            value: 16
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_337853_frc'') != ''0'' }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_337853_frc
+          data:
+            option: '0'
     - conditions:
       - condition: state
         entity_id: input_select.goe_ks_lademodus
         state: Aus
       sequence:
-      - action: select.select_option
-        target:
-          entity_id: select.goe_337853_lmo
-        data:
-          option: '4'
-      - action: select.select_option
-        target:
-          entity_id: select.goe_337853_frc
-        data:
-          option: '1'
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_337853_lmo'') != ''4'' }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_337853_lmo
+          data:
+            option: '4'
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_337853_frc'') != ''1'' }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_337853_frc
+          data:
+            option: '1'
     - conditions:
       - condition: state
         entity_id: input_select.goe_ks_lademodus
         state: Sofort (Max)
       sequence:
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_337853_lmo'') != ''4'' }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_337853_lmo
+          data:
+            option: '4'
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_337853_psm'') != ''2'' }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_337853_psm
+          data:
+            option: '2'
+      - if:
+        - condition: template
+          value_template: '{{ (states(''number.goe_337853_amp'') | int(-1)) != 16 }}'
+        then:
+        - action: number.set_value
+          target:
+            entity_id: number.goe_337853_amp
+          data:
+            value: 16
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_337853_frc'') != ''2'' or not is_state(''binary_sensor.goe_337853_alw'', ''on'') }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_337853_frc
+          data:
+            option: '2'
+    default:
+    - if:
+      - condition: template
+        value_template: '{{ states(''select.goe_337853_lmo'') != ''4'' }}'
+      then:
       - action: select.select_option
         target:
           entity_id: select.goe_337853_lmo
         data:
           option: '4'
-      - action: select.select_option
-        target:
-          entity_id: select.goe_337853_psm
-        data:
-          option: '2'
-      - action: number.set_value
-        target:
-          entity_id: number.goe_337853_amp
-        data:
-          value: 16
-      - action: select.select_option
-        target:
-          entity_id: select.goe_337853_frc
-        data:
-          option: '2'
-    default:
-    - action: select.select_option
-      target:
-        entity_id: select.goe_337853_lmo
-      data:
-        option: '4'
   mode: restart
 - id: '202611160003'
   alias: go-e GS Modus-Umschaltung
@@ -1663,72 +1707,116 @@
         entity_id: input_select.goe_gs_lademodus
         state: Manuell (App / Frei)
       sequence:
-      - action: select.select_option
-        target:
-          entity_id: select.goe_081320_lmo
-        data:
-          option: '3'
-      - action: select.select_option
-        target:
-          entity_id: select.goe_081320_psm
-        data:
-          option: '0'
-      - action: number.set_value
-        target:
-          entity_id: number.goe_081320_amp
-        data:
-          value: 16
-      - action: select.select_option
-        target:
-          entity_id: select.goe_081320_frc
-        data:
-          option: '0'
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_081320_lmo'') != ''3'' }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_081320_lmo
+          data:
+            option: '3'
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_081320_psm'') != ''0'' }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_081320_psm
+          data:
+            option: '0'
+      - if:
+        - condition: template
+          value_template: '{{ (states(''number.goe_081320_amp'') | int(-1)) != 16 }}'
+        then:
+        - action: number.set_value
+          target:
+            entity_id: number.goe_081320_amp
+          data:
+            value: 16
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_081320_frc'') != ''0'' }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_081320_frc
+          data:
+            option: '0'
     - conditions:
       - condition: state
         entity_id: input_select.goe_gs_lademodus
         state: Aus
       sequence:
-      - action: select.select_option
-        target:
-          entity_id: select.goe_081320_lmo
-        data:
-          option: '4'
-      - action: select.select_option
-        target:
-          entity_id: select.goe_081320_frc
-        data:
-          option: '1'
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_081320_lmo'') != ''4'' }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_081320_lmo
+          data:
+            option: '4'
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_081320_frc'') != ''1'' }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_081320_frc
+          data:
+            option: '1'
     - conditions:
       - condition: state
         entity_id: input_select.goe_gs_lademodus
         state: Sofort (Max)
       sequence:
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_081320_lmo'') != ''4'' }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_081320_lmo
+          data:
+            option: '4'
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_081320_psm'') != ''2'' }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_081320_psm
+          data:
+            option: '2'
+      - if:
+        - condition: template
+          value_template: '{{ (states(''number.goe_081320_amp'') | int(-1)) != 16 }}'
+        then:
+        - action: number.set_value
+          target:
+            entity_id: number.goe_081320_amp
+          data:
+            value: 16
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_081320_frc'') != ''2'' or not is_state(''binary_sensor.goe_081320_alw'', ''on'') }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_081320_frc
+          data:
+            option: '2'
+    default:
+    - if:
+      - condition: template
+        value_template: '{{ states(''select.goe_081320_lmo'') != ''4'' }}'
+      then:
       - action: select.select_option
         target:
           entity_id: select.goe_081320_lmo
         data:
           option: '4'
-      - action: select.select_option
-        target:
-          entity_id: select.goe_081320_psm
-        data:
-          option: '2'
-      - action: number.set_value
-        target:
-          entity_id: number.goe_081320_amp
-        data:
-          value: 16
-      - action: select.select_option
-        target:
-          entity_id: select.goe_081320_frc
-        data:
-          option: '2'
-    default:
-    - action: select.select_option
-      target:
-        entity_id: select.goe_081320_lmo
-      data:
-        option: '4'
   mode: restart
 - id: '202611160002'
   alias: go-e KS PV-Überschuss & Smart Regelung
@@ -1737,6 +1825,13 @@
   triggers:
   - trigger: time_pattern
     seconds: /30
+  - trigger: state
+    entity_id: binary_sensor.goe_337853_car_0
+    to: 'on'
+  - trigger: state
+    entity_id: input_select.goe_ks_lademodus
+    for:
+      seconds: 2
   conditions:
   - condition: state
     entity_id: binary_sensor.goe_337853_car_0
@@ -1783,21 +1878,29 @@
         value_template: '{{ modus != ''Manuell (App / Frei)'' and auto_soc >= auto_ziel
           }}'
       sequence:
-      - action: select.select_option
-        target:
-          entity_id: select.goe_337853_frc
-        data:
-          option: '1'
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_337853_frc'') != ''1'' }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_337853_frc
+          data:
+            option: '1'
     - conditions:
       - condition: template
         value_template: '{{ max_car_total_w < 1380 and (modus != ''Manuell (App / Frei)''
           or (bezug > max_grid_w and car_w > 100)) }}'
       sequence:
-      - action: select.select_option
-        target:
-          entity_id: select.goe_337853_frc
-        data:
-          option: '1'
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_337853_frc'') != ''1'' }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_337853_frc
+          data:
+            option: '1'
     - conditions:
       - condition: template
         value_template: '{{ modus == ''Manuell (App / Frei)'' }}'
@@ -1811,22 +1914,38 @@
             value_template: '{{ max_car_total_w >= 4200 and states(''select.goe_337853_psm'')
               != ''1'' }}'
           then:
-          - action: number.set_value
-            target:
-              entity_id: number.goe_337853_amp
-            data:
-              value: '{{ [16, [6, (max_car_total_w / 690) | int] | max] | min }}'
+          - variables:
+              target_amp: '{{ [16, [6, (max_car_total_w / 690) | int] | max] | min }}'
+          - if:
+            - condition: template
+              value_template: '{{ (states(''number.goe_337853_amp'') | int(-1)) != (target_amp | int) }}'
+            then:
+            - action: number.set_value
+              target:
+                entity_id: number.goe_337853_amp
+              data:
+                value: '{{ target_amp | int }}'
           else:
-          - action: select.select_option
-            target:
-              entity_id: select.goe_337853_psm
-            data:
-              option: '1'
-          - action: number.set_value
-            target:
-              entity_id: number.goe_337853_amp
-            data:
-              value: '{{ [16, [6, (max_car_total_w / 230) | int] | max] | min }}'
+          - if:
+            - condition: template
+              value_template: '{{ states(''select.goe_337853_psm'') != ''1'' }}'
+            then:
+            - action: select.select_option
+              target:
+                entity_id: select.goe_337853_psm
+              data:
+                option: '1'
+          - variables:
+              target_amp: '{{ [16, [6, (max_car_total_w / 230) | int] | max] | min }}'
+          - if:
+            - condition: template
+              value_template: '{{ (states(''number.goe_337853_amp'') | int(-1)) != (target_amp | int) }}'
+            then:
+            - action: number.set_value
+              target:
+                entity_id: number.goe_337853_amp
+              data:
+                value: '{{ target_amp | int }}'
     - conditions:
       - condition: template
         value_template: '{{ modus == ''Sofort (Max)'' or (modus == ''Smart (Auto-Prio)''
@@ -1836,78 +1955,135 @@
         - condition: template
           value_template: '{{ max_car_total_w >= 4200 }}'
         then:
+        - if:
+          - condition: template
+            value_template: '{{ states(''select.goe_337853_psm'') != ''2'' }}'
+          then:
+          - action: select.select_option
+            target:
+              entity_id: select.goe_337853_psm
+            data:
+              option: '2'
+        - variables:
+            target_amp: '{{ [16, [6, (max_car_total_w / 690) | int] | max] | min }}'
+        - if:
+          - condition: template
+            value_template: '{{ (states(''number.goe_337853_amp'') | int(-1)) != (target_amp | int) }}'
+          then:
+          - action: number.set_value
+            target:
+              entity_id: number.goe_337853_amp
+            data:
+              value: '{{ target_amp | int }}'
+        else:
+        - if:
+          - condition: template
+            value_template: '{{ states(''select.goe_337853_psm'') != ''1'' }}'
+          then:
+          - action: select.select_option
+            target:
+              entity_id: select.goe_337853_psm
+            data:
+              option: '1'
+        - variables:
+            target_amp: '{{ [16, [6, (max_car_total_w / 230) | int] | max] | min }}'
+        - if:
+          - condition: template
+            value_template: '{{ (states(''number.goe_337853_amp'') | int(-1)) != (target_amp | int) }}'
+          then:
+          - action: number.set_value
+            target:
+              entity_id: number.goe_337853_amp
+            data:
+              value: '{{ target_amp | int }}'
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_337853_frc'') != ''2'' or not is_state(''binary_sensor.goe_337853_alw'', ''on'') }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_337853_frc
+          data:
+            option: '2'
+    - conditions:
+      - condition: template
+        value_template: '{{ eff_pv_w >= 4200 }}'
+      sequence:
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_337853_psm'') != ''2'' }}'
+        then:
         - action: select.select_option
           target:
             entity_id: select.goe_337853_psm
           data:
             option: '2'
+      - variables:
+          target_amp: '{{ [16, [6, (eff_pv_w / 690) | int] | max] | min }}'
+      - if:
+        - condition: template
+          value_template: '{{ (states(''number.goe_337853_amp'') | int(-1)) != (target_amp | int) }}'
+        then:
         - action: number.set_value
           target:
             entity_id: number.goe_337853_amp
           data:
-            value: '{{ [16, [6, (max_car_total_w / 690) | int] | max] | min }}'
-        else:
+            value: '{{ target_amp | int }}'
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_337853_frc'') != ''2'' or not is_state(''binary_sensor.goe_337853_alw'', ''on'') }}'
+        then:
         - action: select.select_option
           target:
-            entity_id: select.goe_337853_psm
+            entity_id: select.goe_337853_frc
           data:
-            option: '1'
-        - action: number.set_value
-          target:
-            entity_id: number.goe_337853_amp
-          data:
-            value: '{{ [16, [6, (max_car_total_w / 230) | int] | max] | min }}'
-      - action: select.select_option
-        target:
-          entity_id: select.goe_337853_frc
-        data:
-          option: '2'
-    - conditions:
-      - condition: template
-        value_template: '{{ eff_pv_w >= 4200 }}'
-      sequence:
-      - action: select.select_option
-        target:
-          entity_id: select.goe_337853_psm
-        data:
-          option: '2'
-      - action: number.set_value
-        target:
-          entity_id: number.goe_337853_amp
-        data:
-          value: '{{ [16, [6, (eff_pv_w / 690) | int] | max] | min }}'
-      - action: select.select_option
-        target:
-          entity_id: select.goe_337853_frc
-        data:
-          option: '2'
+            option: '2'
     - conditions:
       - condition: template
         value_template: '{{ eff_pv_w >= 1380 or (is_charging and eff_pv_w >= 1100 and
           max_car_total_w >= 1380) }}'
       sequence:
-      - action: select.select_option
-        target:
-          entity_id: select.goe_337853_psm
-        data:
-          option: '1'
-      - action: number.set_value
-        target:
-          entity_id: number.goe_337853_amp
-        data:
-          value: '{{ [16, [6, (eff_pv_w / 230) | int] | max] | min }}'
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_337853_psm'') != ''1'' }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_337853_psm
+          data:
+            option: '1'
+      - variables:
+          target_amp: '{{ [16, [6, (eff_pv_w / 230) | int] | max] | min }}'
+      - if:
+        - condition: template
+          value_template: '{{ (states(''number.goe_337853_amp'') | int(-1)) != (target_amp | int) }}'
+        then:
+        - action: number.set_value
+          target:
+            entity_id: number.goe_337853_amp
+          data:
+            value: '{{ target_amp | int }}'
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_337853_frc'') != ''2'' or not is_state(''binary_sensor.goe_337853_alw'', ''on'') }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_337853_frc
+          data:
+            option: '2'
+    default:
+    - if:
+      - condition: template
+        value_template: '{{ states(''select.goe_337853_frc'') != ''1'' }}'
+      then:
       - action: select.select_option
         target:
           entity_id: select.goe_337853_frc
         data:
-          option: '2'
-    default:
-    - action: select.select_option
-      target:
-        entity_id: select.goe_337853_frc
-      data:
-        option: '1'
-  mode: single
+          option: '1'
+  mode: queued
+  max: 3
 - id: '202611160004'
   alias: go-e GS PV-Überschuss & Smart Regelung
   description: Dynamische 1p/3p PV-Überschuss-, Smart- und Spitzenlast-Regelung für go-e
@@ -1915,6 +2091,13 @@
   triggers:
   - trigger: time_pattern
     seconds: /30
+  - trigger: state
+    entity_id: binary_sensor.goe_081320_car_0
+    to: 'on'
+  - trigger: state
+    entity_id: input_select.goe_gs_lademodus
+    for:
+      seconds: 2
   conditions:
   - condition: state
     entity_id: binary_sensor.goe_081320_car_0
@@ -1954,21 +2137,29 @@
         value_template: '{{ modus != ''Manuell (App / Frei)'' and auto_soc >= auto_ziel
           }}'
       sequence:
-      - action: select.select_option
-        target:
-          entity_id: select.goe_081320_frc
-        data:
-          option: '1'
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_081320_frc'') != ''1'' }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_081320_frc
+          data:
+            option: '1'
     - conditions:
       - condition: template
         value_template: '{{ max_car_total_w < 1380 and (modus != ''Manuell (App / Frei)''
           or (bezug > max_grid_w and car_w > 100)) }}'
       sequence:
-      - action: select.select_option
-        target:
-          entity_id: select.goe_081320_frc
-        data:
-          option: '1'
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_081320_frc'') != ''1'' }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_081320_frc
+          data:
+            option: '1'
     - conditions:
       - condition: template
         value_template: '{{ modus == ''Manuell (App / Frei)'' }}'
@@ -1982,22 +2173,38 @@
             value_template: '{{ max_car_total_w >= 4200 and states(''select.goe_081320_psm'')
               != ''1'' }}'
           then:
-          - action: number.set_value
-            target:
-              entity_id: number.goe_081320_amp
-            data:
-              value: '{{ [16, [6, (max_car_total_w / 690) | int] | max] | min }}'
+          - variables:
+              target_amp: '{{ [16, [6, (max_car_total_w / 690) | int] | max] | min }}'
+          - if:
+            - condition: template
+              value_template: '{{ (states(''number.goe_081320_amp'') | int(-1)) != (target_amp | int) }}'
+            then:
+            - action: number.set_value
+              target:
+                entity_id: number.goe_081320_amp
+              data:
+                value: '{{ target_amp | int }}'
           else:
-          - action: select.select_option
-            target:
-              entity_id: select.goe_081320_psm
-            data:
-              option: '1'
-          - action: number.set_value
-            target:
-              entity_id: number.goe_081320_amp
-            data:
-              value: '{{ [16, [6, (max_car_total_w / 230) | int] | max] | min }}'
+          - if:
+            - condition: template
+              value_template: '{{ states(''select.goe_081320_psm'') != ''1'' }}'
+            then:
+            - action: select.select_option
+              target:
+                entity_id: select.goe_081320_psm
+              data:
+                option: '1'
+          - variables:
+              target_amp: '{{ [16, [6, (max_car_total_w / 230) | int] | max] | min }}'
+          - if:
+            - condition: template
+              value_template: '{{ (states(''number.goe_081320_amp'') | int(-1)) != (target_amp | int) }}'
+            then:
+            - action: number.set_value
+              target:
+                entity_id: number.goe_081320_amp
+              data:
+                value: '{{ target_amp | int }}'
     - conditions:
       - condition: template
         value_template: '{{ modus == ''Sofort (Max)'' or (modus == ''Smart (Auto-Prio)''
@@ -2007,78 +2214,135 @@
         - condition: template
           value_template: '{{ max_car_total_w >= 4200 }}'
         then:
+        - if:
+          - condition: template
+            value_template: '{{ states(''select.goe_081320_psm'') != ''2'' }}'
+          then:
+          - action: select.select_option
+            target:
+              entity_id: select.goe_081320_psm
+            data:
+              option: '2'
+        - variables:
+            target_amp: '{{ [16, [6, (max_car_total_w / 690) | int] | max] | min }}'
+        - if:
+          - condition: template
+            value_template: '{{ (states(''number.goe_081320_amp'') | int(-1)) != (target_amp | int) }}'
+          then:
+          - action: number.set_value
+            target:
+              entity_id: number.goe_081320_amp
+            data:
+              value: '{{ target_amp | int }}'
+        else:
+        - if:
+          - condition: template
+            value_template: '{{ states(''select.goe_081320_psm'') != ''1'' }}'
+          then:
+          - action: select.select_option
+            target:
+              entity_id: select.goe_081320_psm
+            data:
+              option: '1'
+        - variables:
+            target_amp: '{{ [16, [6, (max_car_total_w / 230) | int] | max] | min }}'
+        - if:
+          - condition: template
+            value_template: '{{ (states(''number.goe_081320_amp'') | int(-1)) != (target_amp | int) }}'
+          then:
+          - action: number.set_value
+            target:
+              entity_id: number.goe_081320_amp
+            data:
+              value: '{{ target_amp | int }}'
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_081320_frc'') != ''2'' or not is_state(''binary_sensor.goe_081320_alw'', ''on'') }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_081320_frc
+          data:
+            option: '2'
+    - conditions:
+      - condition: template
+        value_template: '{{ eff_pv_w >= 4200 }}'
+      sequence:
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_081320_psm'') != ''2'' }}'
+        then:
         - action: select.select_option
           target:
             entity_id: select.goe_081320_psm
           data:
             option: '2'
+      - variables:
+          target_amp: '{{ [16, [6, (eff_pv_w / 690) | int] | max] | min }}'
+      - if:
+        - condition: template
+          value_template: '{{ (states(''number.goe_081320_amp'') | int(-1)) != (target_amp | int) }}'
+        then:
         - action: number.set_value
           target:
             entity_id: number.goe_081320_amp
           data:
-            value: '{{ [16, [6, (max_car_total_w / 690) | int] | max] | min }}'
-        else:
+            value: '{{ target_amp | int }}'
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_081320_frc'') != ''2'' or not is_state(''binary_sensor.goe_081320_alw'', ''on'') }}'
+        then:
         - action: select.select_option
           target:
-            entity_id: select.goe_081320_psm
+            entity_id: select.goe_081320_frc
           data:
-            option: '1'
-        - action: number.set_value
-          target:
-            entity_id: number.goe_081320_amp
-          data:
-            value: '{{ [16, [6, (max_car_total_w / 230) | int] | max] | min }}'
-      - action: select.select_option
-        target:
-          entity_id: select.goe_081320_frc
-        data:
-          option: '2'
-    - conditions:
-      - condition: template
-        value_template: '{{ eff_pv_w >= 4200 }}'
-      sequence:
-      - action: select.select_option
-        target:
-          entity_id: select.goe_081320_psm
-        data:
-          option: '2'
-      - action: number.set_value
-        target:
-          entity_id: number.goe_081320_amp
-        data:
-          value: '{{ [16, [6, (eff_pv_w / 690) | int] | max] | min }}'
-      - action: select.select_option
-        target:
-          entity_id: select.goe_081320_frc
-        data:
-          option: '2'
+            option: '2'
     - conditions:
       - condition: template
         value_template: '{{ eff_pv_w >= 1380 or (is_charging and eff_pv_w >= 1100 and
           max_car_total_w >= 1380) }}'
       sequence:
-      - action: select.select_option
-        target:
-          entity_id: select.goe_081320_psm
-        data:
-          option: '1'
-      - action: number.set_value
-        target:
-          entity_id: number.goe_081320_amp
-        data:
-          value: '{{ [16, [6, (eff_pv_w / 230) | int] | max] | min }}'
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_081320_psm'') != ''1'' }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_081320_psm
+          data:
+            option: '1'
+      - variables:
+          target_amp: '{{ [16, [6, (eff_pv_w / 230) | int] | max] | min }}'
+      - if:
+        - condition: template
+          value_template: '{{ (states(''number.goe_081320_amp'') | int(-1)) != (target_amp | int) }}'
+        then:
+        - action: number.set_value
+          target:
+            entity_id: number.goe_081320_amp
+          data:
+            value: '{{ target_amp | int }}'
+      - if:
+        - condition: template
+          value_template: '{{ states(''select.goe_081320_frc'') != ''2'' or not is_state(''binary_sensor.goe_081320_alw'', ''on'') }}'
+        then:
+        - action: select.select_option
+          target:
+            entity_id: select.goe_081320_frc
+          data:
+            option: '2'
+    default:
+    - if:
+      - condition: template
+        value_template: '{{ states(''select.goe_081320_frc'') != ''1'' }}'
+      then:
       - action: select.select_option
         target:
           entity_id: select.goe_081320_frc
         data:
-          option: '2'
-    default:
-    - action: select.select_option
-      target:
-        entity_id: select.goe_081320_frc
-      data:
-        option: '1'
-  mode: single
+          option: '1'
+  mode: queued
+  max: 3
 - id: '202611160005'
   alias: go-e KS Ladeziel Reset auf 80%
   description: Setzt das Auto-Ladeziel beim Abstecken wieder auf 80% zurück
@@ -2332,17 +2596,6 @@
         actions:
         - action: '{{ undo_action }}'
           title: ↩️ Rückgängig machen
-  - action: notify.mobile_app_karl_s_s22
-    continue_on_error: true
-    data:
-      title: '⚠️ EV5 verstellt durch {{ who }}'
-      message: '{{ label }} wurde von „{{ old_disp }}“ auf „{{ new_disp }}“ geändert.'
-      data:
-        tag: 'ev5_change_{{ trigger.entity_id }}'
-        importance: high
-        actions:
-        - action: '{{ undo_action }}'
-          title: ↩️ Rückgängig machen
 - id: '202611170002'
   alias: go-e KS EV5 Verstell-Warnung Undo Action
   description: Stellt die vorherige EV5-Einstellung nach Klick auf Rückgängig in der
@@ -2409,13 +2662,6 @@
         data:
           value: '{{ old_val | float }}'
   - action: notify.mobile_app_karl_s_s26
-    continue_on_error: true
-    data:
-      title: ✅ EV5 Einstellung wiederhergestellt
-      message: '{{ label }} wurde auf „{{ old_val }}“ zurückgesetzt.'
-      data:
-        tag: 'ev5_change_{{ ent }}'
-  - action: notify.mobile_app_karl_s_s22
     continue_on_error: true
     data:
       title: ✅ EV5 Einstellung wiederhergestellt
@@ -2774,7 +3020,7 @@
     entity_id: binary_sensor.octoprint_printing
     state: 'off'
   action:
-  - action: notify.mobile_app_karl_s_s22
+  - action: notify.mobile_app_karl_s_s26
     data:
       message: 3D Drucker heizt >150 °C seit 15 min ohne aktiven Druck – schalte ab!
   - action: switch.turn_off
